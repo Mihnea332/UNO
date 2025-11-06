@@ -23,48 +23,24 @@ namespace UNO.Logic
                         deck.Add(carte);
                     }
                     else if (v == Val.Reverse || v == Val.DrawTwo || v == Val.Skip)
-                        deck.Add(new SpecialCard(c, v));
+                    {
+
+                        Card carte = new SpecialCard(c, v);
+                        deck.Add(carte);
+                    }
                 }
 
+                }
+                deck.Add(new WildCard(Colors.None, Val.Wild));
+                deck.Add(new WildCard(Colors.None, Val.WildDrawFour));
             }
-            deck.Add(new WildCard(Colors.None, Val.Wild));
-            deck.Add(new WildCard(Colors.None, Val.WildDrawFour));
-        }
-        public void Print()
-        {
-            foreach (Card c in deck)
-                Console.WriteLine(c.ToString());
-        }
-        public void Shuffle()
-        {
-            Random rnd = new Random();
-            for (int i = 0; i < deck.Count; i++)
+            public void Print()
             {
-                int index = rnd.Next(0, deck.Count);
-                Card temp = deck[i];
-                deck[i] = deck[index];
-                deck[index] = temp;
+                foreach (Card c in deck)
+                    Console.WriteLine(c.ToString());
             }
-
-        }
-        public void Deal(Player p)
-        {
-            for (int i = 0; i < 5; i++)
+            public void Shuffle()
             {
-                p.AddCard(deck[deck.Count - 1]);
-                deck.RemoveAt(deck.Count - 1);
-            }
-        }
-        public void DrawCard(Player p, Card TopCard)
-        {
-            if (deck.Count == 0)
-            {
-                List<Card> deck_temp = new List<Card>();
-                foreach (Card c in deck_played)
-                    if (c != TopCard) deck_temp.Add(c);
-
-                deck_played.Clear();
-                deck = deck_temp;
                 Random rnd = new Random();
                 for (int i = 0; i < deck.Count; i++)
                 {
@@ -73,16 +49,44 @@ namespace UNO.Logic
                     deck[i] = deck[index];
                     deck[index] = temp;
                 }
-            }
-            p.AddCard(deck[deck.Count - 1]);
-            deck.RemoveAt(deck.Count - 1);
 
-        }
-        public Card GetTopCard()
-        {
-            Card temp=deck[deck.Count - 1];
-            deck.RemoveAt(deck.Count - 1);
-            return temp;
+            }
+            public void Deal(Player p)
+            {
+                for (int i = 0; i < 5; i++)
+                {
+                    p.AddCard(deck[deck.Count - 1]);
+                    deck.RemoveAt(deck.Count - 1);
+                }
+            }
+            public void DrawCard(Player p, Card TopCard)
+            {
+                if (deck.Count == 0)
+                {
+                    List<Card> deck_temp = new List<Card>();
+                    foreach (Card c in deck_played)
+                        if (c != TopCard) deck_temp.Add(c);
+
+                    deck_played.Clear();
+                    deck = deck_temp;
+                    Random rnd = new Random();
+                    for (int i = 0; i < deck.Count; i++)
+                    {
+                        int index = rnd.Next(0, deck.Count);
+                        Card temp = deck[i];
+                        deck[i] = deck[index];
+                        deck[index] = temp;
+                    }
+                }
+                p.AddCard(deck[deck.Count - 1]);
+                deck.RemoveAt(deck.Count - 1);
+
+            }
+            public Card GetTopCard()
+            {
+                Card temp = deck[deck.Count - 1];
+                deck.RemoveAt(deck.Count - 1);
+                return temp;
+            }
         }
     }
-}
