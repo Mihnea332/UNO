@@ -13,7 +13,8 @@ namespace UNO.Model
 
         public Colors color { get; set; }
         public Val value { get; set; }
-        public Card(Colors color, Val value)
+      
+    public Card(Colors color, Val value)
         {
             this.color = color;
             this.value = value;

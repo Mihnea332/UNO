@@ -60,6 +60,14 @@ namespace UNO
 
         private void panel1_Paint(object sender, PaintEventArgs e)
         {
+            panel1.BackgroundImage = Image.FromFile(Path.Combine(Application.StartupPath, @"..\..\Resources\Table_One.png"));
+
+            panel1.BackgroundImageLayout = ImageLayout.Stretch;
+
+        }
+
+        private void panelHand_Paint(object sender, PaintEventArgs e)
+        {
 
         }
     }

@@ -37,8 +37,9 @@
             this.panelHand.Location = new System.Drawing.Point(228, 329);
             this.panelHand.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panelHand.Name = "panelHand";
-            this.panelHand.Size = new System.Drawing.Size(557, 196);
+            this.panelHand.Size = new System.Drawing.Size(591, 166);
             this.panelHand.TabIndex = 0;
+            this.panelHand.Paint += new System.Windows.Forms.PaintEventHandler(this.panelHand_Paint);
             // 
             // panel1
             // 
