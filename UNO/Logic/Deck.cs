@@ -9,23 +9,26 @@ namespace UNO.Logic
     public class Deck
     {
         List<Card> deck = new List<Card>();
-        List<Card> deck_played = new List<Card>();
+        public List<Card> deck_played = new List<Card>();
         public void Generate()
         {
-            foreach (Color c in Enum.GetValues(typeof(Color)))
+            foreach (Colors c in Enum.GetValues(typeof(Colors)))
             {
-                if (c == Color.None) continue;
+                if (c == Colors.None) continue;
                 foreach (Val v in Enum.GetValues(typeof(Val)))
                 {
                     if (v <= Val.Nine)
-                        deck.Add(new NormalCard(c, v));
+                    {
+                        Card carte = new NormalCard(c, v);
+                        deck.Add(carte);
+                    }
                     else if (v == Val.Reverse || v == Val.DrawTwo || v == Val.Skip)
                         deck.Add(new SpecialCard(c, v));
                 }
 
             }
-            deck.Add(new WildCard(Color.None, Val.Wild));
-            deck.Add(new WildCard(Color.None, Val.WildDrawFour));
+            deck.Add(new WildCard(Colors.None, Val.Wild));
+            deck.Add(new WildCard(Colors.None, Val.WildDrawFour));
         }
         public void Print()
         {
@@ -71,9 +74,15 @@ namespace UNO.Logic
                     deck[index] = temp;
                 }
             }
-                p.AddCard(deck[deck.Count - 1]);
-                deck.RemoveAt(deck.Count - 1);
-            
+            p.AddCard(deck[deck.Count - 1]);
+            deck.RemoveAt(deck.Count - 1);
+
+        }
+        public Card GetTopCard()
+        {
+            Card temp=deck[deck.Count - 1];
+            deck.RemoveAt(deck.Count - 1);
+            return temp;
         }
     }
 }

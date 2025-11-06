@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Windows.Forms;
 namespace UNO.Model
 {
    public class SpecialCard:Card
     {
-        public SpecialCard(Color c,Val value) : base(c, value)
+        public SpecialCard(Colors c,Val value) : base(c, value)
         {
 
         }
@@ -16,6 +17,14 @@ namespace UNO.Model
         public override string ToString()
         {
             return $"[SpecialCard] {color} {value}";
+        }
+        public override string GetCardName()
+        {
+            string ValuePart = value.ToString();
+            string ColorPart = color.ToString();
+
+
+            return Path.Combine(Application.StartupPath, @"..\..\Resources", ColorPart + "_" + ValuePart + ".png");
         }
     }
 }

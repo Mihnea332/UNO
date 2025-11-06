@@ -1,13 +1,14 @@
 ﻿namespace UNO.Model
 {
     
-    public enum Color
+    public enum Colors
     {
         Red,
         Blue,
         Green,
         Yellow,
-        None 
+        None,
+        
     }
 
    
@@ -30,5 +31,10 @@
         Wild,
         WildDrawFour,
         None
+    }
+    public enum Directions
+    {
+        Clockwise,
+        CounterClockwise
     }
 }

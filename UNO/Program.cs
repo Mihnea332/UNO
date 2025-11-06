@@ -13,8 +13,8 @@ namespace UNO
         [STAThread]
         static void Main()
         {
-            /* Player p1 = new Player("Mihnea");
-             Deck d = new Deck();
+            Player p1 = new Player("Mihnea");
+            Deck d = new Deck();
              d.Generate();
              d.Shuffle();
              d.Print();
@@ -23,9 +23,8 @@ namespace UNO
              p1.ShowHand();
              Console.WriteLine();
              Console.WriteLine();
-
              d.Print();
-            
+           /*
             GameTimer timer = new GameTimer(5000);
 
             // Pornim timer-ul
@@ -42,8 +41,9 @@ namespace UNO
                     Environment.Exit(0); // 0 = ieșire normală
                 }
             }
-            */
+            
             Console.WriteLine("Timpul s-a scurs! Testul s-a terminat.");
+            */
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
