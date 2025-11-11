@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.IO;
+using System.Drawing;
 using UNO.Model;
 
 namespace UNO.Logic
@@ -11,6 +14,7 @@ namespace UNO.Logic
     {
         string Name;
         public List<Card> Hand = new List<Card>();
+        public event Action<Card> CardClicked;
         public Player(string Name)
         {
             this.Name = Name;
@@ -23,6 +27,50 @@ namespace UNO.Logic
         public void RemoveCard(Card card)
         {
             Hand.Remove(card);
+        }
+        public void ShowHand(Control parent)
+        {
+            if (parent == null) return;
+            parent.Controls.Clear();
+            if (Hand == null || Hand.Count == 0) return;
+            int cardWidth = 80;
+            int cardHeight = 120;
+            int spacing = 10;
+            int x = 150;
+            int y = Math.Max(10, parent.ClientSize.Height - cardHeight - 10);
+            int i = 0;
+            foreach (Card c in Hand)
+            {
+                PictureBox pb = new PictureBox
+                {
+                    Size = new Size(cardWidth, cardWidth),
+                    Location = new Point(x, y),
+                    SizeMode = PictureBoxSizeMode.StretchImage,
+                    BackColor = Color.Transparent,
+                    Name = "card" + i
+                };
+                try
+                {
+                    String path = c.GetCardName();
+                    if (File.Exists(path))
+                    {
+                        pb.Image = Image.FromFile(path);
+                    }
+                    else
+                    {
+                        pb.BackColor = Color.Gray;
+                    }
+                }
+
+                catch
+                {
+                    pb.BackColor = Color.Gray;
+                }
+                parent.Controls.Add(pb);
+                x += cardWidth + spacing;
+                i++;
+
+            }
         }
         public void ShowHand()
         {
@@ -46,5 +94,6 @@ namespace UNO.Logic
            
                 RemoveCard(card);
         }
+       
     }
 }

@@ -28,35 +28,24 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.panelHand = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.SuspendLayout();
             // 
-            // panelHand
-            // 
-            this.panelHand.Location = new System.Drawing.Point(228, 329);
-            this.panelHand.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.panelHand.Name = "panelHand";
-            this.panelHand.Size = new System.Drawing.Size(591, 166);
-            this.panelHand.TabIndex = 0;
-            this.panelHand.Paint += new System.Windows.Forms.PaintEventHandler(this.panelHand_Paint);
-            // 
             // panel1
             // 
-            this.panel1.Location = new System.Drawing.Point(0, 1);
+            this.panel1.Location = new System.Drawing.Point(-1, 0);
+            this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1041, 541);
+            this.panel1.Size = new System.Drawing.Size(782, 441);
             this.panel1.TabIndex = 0;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1043, 539);
-            this.Controls.Add(this.panelHand);
+            this.ClientSize = new System.Drawing.Size(782, 438);
             this.Controls.Add(this.panel1);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -66,7 +55,6 @@
 
         #endregion
 
-        private System.Windows.Forms.Panel panelHand;
         private System.Windows.Forms.Panel panel1;
     }
 }

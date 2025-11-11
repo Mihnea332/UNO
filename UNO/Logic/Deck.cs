@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.IO;
+using System.Drawing;
 using UNO.Model;
+
 namespace UNO.Logic
 {
     public class Deck
@@ -88,5 +92,72 @@ namespace UNO.Logic
                 deck.RemoveAt(deck.Count - 1);
                 return temp;
             }
+        public void ShowTopCard(Control parent, Card TopCard)
+        {
+            if (parent == null) return;
+            List<Control> old = parent.Controls.OfType<Control>().Where(c => c.Tag != null && c.Tag.ToString() == "topCard").ToList();
+            foreach (Control c in old)
+            {
+                if (c is PictureBox oldPb)
+                {
+                    if (oldPb.Image!=null)
+                        try
+                        {
+                            oldPb.Image.Dispose();
+                        }
+                        catch
+                        {
+                            oldPb.Image = null;
+                        }
+                }
+                parent.Controls.Remove(c);
+                try
+                {
+                    c.Dispose();
+                }
+                catch { }
+            }
+            Card cardToShow;
+            if (TopCard != null)
+             cardToShow = TopCard;
+            else
+            {
+                if (deck_played.Count > 0)
+                    cardToShow = deck_played[deck_played.Count - 1];
+                else
+                    return;
+            }
+            int cardWidth = 80;
+            int cardHeight = 120;
+            int x = (parent.ClientSize.Width - cardWidth) / 2;
+            int y = (parent.ClientSize.Height - cardHeight) / 2;
+            PictureBox pb = new PictureBox
+            {
+                Size = new Size(cardWidth, cardHeight),
+                Location = new Point(x, y),
+                SizeMode = PictureBoxSizeMode.StretchImage,
+                Tag = "topCard",
+                Name = "topCardBox"
+
+            };
+            try
+            {
+                String path = TopCard.GetCardName();
+                if (File.Exists(path))
+                {
+                    pb.Image = Image.FromFile(path);
+                }
+                else
+                {
+                    pb.BackColor = Color.Gray;
+                }
+            }
+            catch
+            {
+                pb.BackColor = Color.Gray;
+            }
+            parent.Controls.Add(pb);
+            pb.BringToFront();
+        }
         }
     }

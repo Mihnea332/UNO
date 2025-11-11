@@ -11,7 +11,7 @@ namespace UNO.Model
     abstract public class Card
     {
 
-        public Colors color { get; set; }
+        public Colors color {  get; set; }
         public Val value { get; set; }
       
     public Card(Colors color, Val value)
