@@ -16,26 +16,62 @@ namespace UNO
     public partial class Form1 : Form
     {
         private Game game;
-       
-        
+        private Player currentPlayer;
+        private Deck deck;
+        private Panel panelHand;
+        private Panel panelTopCard;
+
         public Form1()
         {
             InitializeComponent();
             
         }
+        private void PictureBox_Click(object sender, EventArgs e)
+        {
+            PictureBox clickedCard = sender as PictureBox;
+            if (clickedCard == null) return;
 
+            Card selectedCard = clickedCard.Tag as Card;
+            if (selectedCard == null) return;
+
+            Card topCard = deck.deck_played.LastOrDefault();
+            if (topCard == null) return;
+
+            if (currentPlayer.IsCardValid(topCard, selectedCard))
+            {
+                currentPlayer.RemoveCard(selectedCard);
+                deck.deck_played.Add(selectedCard);
+
+                deck.ShowTopCard(panelTopCard, selectedCard);
+                currentPlayer.ShowHand(panelHand, PictureBox_Click);
+
+            }
+            else
+            {
+                MessageBox.Show("Cartea nu este validă!");
+            }
+           
+        }
         private void Form1_Load(object sender, EventArgs e)
         {
-            Player p = new Player("Mihnea");
-            Deck d = new Deck();
-            d.Generate();
-            d.Shuffle();
-            d.Deal(p);
-            Card topCard = d.GetTopCard();
-            Console.WriteLine(topCard.ToString());
-            p.ShowHand(this);
-            d.ShowTopCard(this,topCard);
+            panelHand = panelHandControl;
+            panelTopCard = panelTopCardControl;
+
+            currentPlayer = new Player("Mihnea");
+            deck = new Deck();
+
+            deck.Generate();
+            deck.Shuffle();
+            deck.Deal(currentPlayer);
+
+            Card topCard = deck.GetTopCard();
+            deck.deck_played.Add(topCard);
+
+            currentPlayer.ShowHand(panelHand, PictureBox_Click);
+            deck.ShowTopCard(panelTopCard, topCard);
+
         }
+
 
         private void pictureBoxTest_Click(object sender, EventArgs e)
         {
@@ -53,6 +89,11 @@ namespace UNO
 
         }
 
-       
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Card topCard = deck.deck_played.LastOrDefault();
+            deck.DrawCard(currentPlayer, topCard);
+            currentPlayer.ShowHand(panelHand, PictureBox_Click);
+        }
     }
 }

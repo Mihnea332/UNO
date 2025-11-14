@@ -34,130 +34,101 @@ namespace UNO.Logic
                     }
                 }
 
+            }
+            deck.Add(new WildCard(Colors.None, Val.Wild));
+            deck.Add(new WildCard(Colors.None, Val.WildDrawFour));
+        }
+        public void Print()
+        {
+            foreach (Card c in deck)
+                Console.WriteLine(c.ToString());
+        }
+        public void Shuffle()
+        {
+            Random rnd = new Random();
+            for (int i = 0; i < deck.Count; i++)
+            {
+                int index = rnd.Next(0, deck.Count);
+                Card temp = deck[i];
+                deck[i] = deck[index];
+                deck[index] = temp;
+            }
+
+        }
+        public void Deal(Player p)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                p.AddCard(deck[deck.Count - 1]);
+                deck.RemoveAt(deck.Count - 1);
+            }
+        }
+        public void DrawCard(Player p, Card TopCard)
+        {
+            if (deck.Count == 0)
+            {
+                List<Card> deck_temp = new List<Card>();
+                foreach (Card c in deck_played)
+                    if (c != TopCard) deck_temp.Add(c);
+
+                if (deck_temp.Count == 0)
+                {
+                    MessageBox.Show("Nu mai sunt cărți disponibile pentru tras!");
+                    return;
                 }
-                deck.Add(new WildCard(Colors.None, Val.Wild));
-                deck.Add(new WildCard(Colors.None, Val.WildDrawFour));
-            }
-            public void Print()
-            {
-                foreach (Card c in deck)
-                    Console.WriteLine(c.ToString());
-            }
-            public void Shuffle()
-            {
+
+                deck_played.Clear();
+                deck_played.Add(TopCard); // păstrează TopCard în joc
+                deck = deck_temp;
+
+                // Shuffle
                 Random rnd = new Random();
                 for (int i = 0; i < deck.Count; i++)
                 {
-                    int index = rnd.Next(0, deck.Count);
+                    int index = rnd.Next(deck.Count);
                     Card temp = deck[i];
                     deck[i] = deck[index];
                     deck[index] = temp;
                 }
+            }
 
-            }
-            public void Deal(Player p)
+            if (deck.Count == 0)
             {
-                for (int i = 0; i < 5; i++)
-                {
-                    p.AddCard(deck[deck.Count - 1]);
-                    deck.RemoveAt(deck.Count - 1);
-                }
+                MessageBox.Show("Pachetul este gol. Nu se poate trage.");
+                return;
             }
-            public void DrawCard(Player p, Card TopCard)
-            {
-                if (deck.Count == 0)
-                {
-                    List<Card> deck_temp = new List<Card>();
-                    foreach (Card c in deck_played)
-                        if (c != TopCard) deck_temp.Add(c);
 
-                    deck_played.Clear();
-                    deck = deck_temp;
-                    Random rnd = new Random();
-                    for (int i = 0; i < deck.Count; i++)
-                    {
-                        int index = rnd.Next(0, deck.Count);
-                        Card temp = deck[i];
-                        deck[i] = deck[index];
-                        deck[index] = temp;
-                    }
-                }
-                p.AddCard(deck[deck.Count - 1]);
-                deck.RemoveAt(deck.Count - 1);
+            p.AddCard(deck[deck.Count - 1]);
+            deck.RemoveAt(deck.Count - 1);
+        }
 
-            }
-            public Card GetTopCard()
-            {
-                Card temp = deck[deck.Count - 1];
-                deck.RemoveAt(deck.Count - 1);
-                return temp;
-            }
-        public void ShowTopCard(Control parent, Card TopCard)
+        public Card GetTopCard()
         {
-            if (parent == null) return;
-            List<Control> old = parent.Controls.OfType<Control>().Where(c => c.Tag != null && c.Tag.ToString() == "topCard").ToList();
-            foreach (Control c in old)
-            {
-                if (c is PictureBox oldPb)
-                {
-                    if (oldPb.Image!=null)
-                        try
-                        {
-                            oldPb.Image.Dispose();
-                        }
-                        catch
-                        {
-                            oldPb.Image = null;
-                        }
-                }
-                parent.Controls.Remove(c);
-                try
-                {
-                    c.Dispose();
-                }
-                catch { }
-            }
-            Card cardToShow;
-            if (TopCard != null)
-             cardToShow = TopCard;
-            else
-            {
-                if (deck_played.Count > 0)
-                    cardToShow = deck_played[deck_played.Count - 1];
-                else
-                    return;
-            }
-            int cardWidth = 80;
-            int cardHeight = 120;
-            int x = (parent.ClientSize.Width - cardWidth) / 2;
-            int y = (parent.ClientSize.Height - cardHeight) / 2;
+            Card temp = deck[deck.Count - 1];
+            deck.RemoveAt(deck.Count - 1);
+            return temp;
+        }
+        public void ShowTopCard(Control parent, Card topCard)
+        {
+            parent.Controls.Clear();
+            int i = 0;
             PictureBox pb = new PictureBox
             {
-                Size = new Size(cardWidth, cardHeight),
-                Location = new Point(x, y),
+                Size = new Size(80, 120),
+                Location = new Point(10, 10),
                 SizeMode = PictureBoxSizeMode.StretchImage,
-                Tag = "topCard",
-                Name = "topCardBox"
+                BackColor = Color.Transparent,
+                Tag=topCard
 
             };
-            try
-            {
-                String path = TopCard.GetCardName();
-                if (File.Exists(path))
-                {
-                    pb.Image = Image.FromFile(path);
-                }
-                else
-                {
-                    pb.BackColor = Color.Gray;
-                }
-            }
-            catch
-            {
+            
+            string path = topCard.GetCardName();
+            if (File.Exists(path))
+                pb.Image = Image.FromFile(path);
+            else
                 pb.BackColor = Color.Gray;
-            }
+
             parent.Controls.Add(pb);
-            pb.BringToFront();
-        }
         }
     }
+}

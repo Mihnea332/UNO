@@ -27,51 +27,51 @@ namespace UNO.Logic
         public void RemoveCard(Card card)
         {
             Hand.Remove(card);
+           
         }
-        public void ShowHand(Control parent)
+        public void ShowHand(Control parent, EventHandler clickHandler)
         {
-            if (parent == null) return;
-            parent.Controls.Clear();
-            if (Hand == null || Hand.Count == 0) return;
+            if (parent == null || Hand == null || Hand.Count == 0) return;
+
+            parent.Controls.Clear(); 
+
             int cardWidth = 80;
             int cardHeight = 120;
             int spacing = 10;
-            int x = 150;
-            int y = Math.Max(10, parent.ClientSize.Height - cardHeight - 10);
-            int i = 0;
-            foreach (Card c in Hand)
+            int x = 10;
+            int y = 10;
+
+            for (int i = 0; i < Hand.Count; i++)
             {
+                Card c = Hand[i];
+
                 PictureBox pb = new PictureBox
                 {
-                    Size = new Size(cardWidth, cardWidth),
+                    Size = new Size(cardWidth, cardHeight),
                     Location = new Point(x, y),
                     SizeMode = PictureBoxSizeMode.StretchImage,
                     BackColor = Color.Transparent,
-                    Name = "card" + i
+                    Tag = c  
                 };
-                try
-                {
-                    String path = c.GetCardName();
-                    if (File.Exists(path))
-                    {
-                        pb.Image = Image.FromFile(path);
-                    }
-                    else
-                    {
-                        pb.BackColor = Color.Gray;
-                    }
-                }
 
-                catch
+                string path = c.GetCardName();
+                if (File.Exists(path))
+                {
+                    pb.Image = Image.FromFile(path);
+                }
+                else
                 {
                     pb.BackColor = Color.Gray;
                 }
-                parent.Controls.Add(pb);
-                x += cardWidth + spacing;
-                i++;
 
+                pb.Click += clickHandler;
+                parent.Controls.Add(pb);
+
+                x += cardWidth + spacing;
             }
         }
+
+
         public void ShowHand()
         {
             foreach (Card c in Hand)
@@ -83,9 +83,9 @@ namespace UNO.Logic
                 if (x.color == TopCard.color || x.value == TopCard.value) return true;
             return false;
         }
-        public bool IsCardValid(Card TopCard,Card CardToPlay)
+        public bool IsCardValid(Card TopCard, Card CardToPlay)
         {
-            if (TopCard.color == CardToPlay.color || TopCard.value == CardToPlay.value || CardToPlay.value == Val.Wild || CardToPlay.value == Val.WildDrawFour)
+            if (TopCard.color == CardToPlay.color || TopCard.value == CardToPlay.value || CardToPlay.value == Val.Wild || CardToPlay.value == Val.WildDrawFour||TopCard.value==Val.Wild)
                 return true;
             return false;
         }
