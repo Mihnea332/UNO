@@ -54,6 +54,9 @@ namespace UNO
         }
         private void Form1_Load(object sender, EventArgs e)
         {
+            Image original = Image.FromFile(@"..\..\Resources\Deck.png");
+            Image redimensionata = new Bitmap(original, new Size(90, 190)); 
+            button1.Image = redimensionata;
             panelHand = panelHandControl;
             panelTopCard = panelTopCardControl;
 
@@ -91,6 +94,7 @@ namespace UNO
 
         private void button1_Click(object sender, EventArgs e)
         {
+            
             Card topCard = deck.deck_played.LastOrDefault();
             deck.DrawCard(currentPlayer, topCard);
             currentPlayer.ShowHand(panelHand, PictureBox_Click);
