@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.panelHandControl = new System.Windows.Forms.Panel();
             this.panelTopCardControl = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
@@ -36,9 +35,9 @@
             // 
             // panelHandControl
             // 
-            this.panelHandControl.Location = new System.Drawing.Point(173, 289);
+            this.panelHandControl.Location = new System.Drawing.Point(2, 289);
             this.panelHandControl.Name = "panelHandControl";
-            this.panelHandControl.Size = new System.Drawing.Size(597, 137);
+            this.panelHandControl.Size = new System.Drawing.Size(768, 137);
             this.panelHandControl.TabIndex = 0;
             // 
             // panelTopCardControl
@@ -50,7 +49,6 @@
             // 
             // button1
             // 
-            this.button1.Image = ((System.Drawing.Image)(resources.GetObject("button1.Image")));
             this.button1.Location = new System.Drawing.Point(689, 12);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(81, 119);
@@ -62,7 +60,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(782, 438);
+            this.ClientSize = new System.Drawing.Size(782, 461);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.panelHandControl);
             this.Controls.Add(this.panelTopCardControl);

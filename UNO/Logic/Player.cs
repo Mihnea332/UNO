@@ -33,14 +33,21 @@ namespace UNO.Logic
         {
             if (parent == null || Hand == null || Hand.Count == 0) return;
 
-            parent.Controls.Clear(); 
-
+            parent.Controls.Clear();
+            int count = Hand.Count();
             int cardWidth = 80;
             int cardHeight = 120;
-            int spacing = 10;
-            int x = 10;
+            int spacing = -150;
+            int x = 500;
             int y = 10;
-
+            if (count > 6)
+            {
+                y = 10 +count;
+                x = 500 + count * 3;
+                spacing += count*5;
+                cardWidth = 80 - count * 2;
+                cardHeight = 120 - count * 3;
+            }
             for (int i = 0; i < Hand.Count; i++)
             {
                 Card c = Hand[i];
