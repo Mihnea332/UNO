@@ -84,7 +84,7 @@ namespace UNO.Logic
         {
             TopCard.color = ChosenColor;
         }
-        private void ApplyEffect(Card PlayedCard,Colors ChosenColor)
+         public void ApplyEffect(Card PlayedCard,Colors ChosenColor)
         {
             Player AffectedPlayer = Players[(CurrentPlayerIndex + 1) % Players.Count];
             switch (PlayedCard.value)

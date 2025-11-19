@@ -111,7 +111,6 @@ namespace UNO.Logic
         public void ShowTopCard(Control parent, Card topCard)
         {
             parent.Controls.Clear();
-            int i = 0;
             PictureBox pb = new PictureBox
             {
                 Size = new Size(80, 120),
