@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Text;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -24,7 +23,7 @@ namespace UNO
         public Form1()
         {
             InitializeComponent();
-            
+            game = new Game(2);   
         }
         private void PictureBox_Click(object sender, EventArgs e)
         {
@@ -40,14 +39,14 @@ namespace UNO
             if (currentPlayer.IsCardValid(topCard, selectedCard))
             {
                 currentPlayer.RemoveCard(selectedCard);
-                Colors color;
+                Colors color=Colors.Red;
                 if(selectedCard.value==Val.Wild||selectedCard.value==Val.WildDrawFour)
                 {
                     int height = 40;
                     int width = 40;
                     int x = 100;
                     int y = 100;
-                    int spacing = 10;
+                    int spacing = 50;
                     Button Red = new Button()
                     {
                         Size = new Size(width, height),
@@ -57,13 +56,61 @@ namespace UNO
                     };
                     Red.Click += (s, ev) =>
                     {
-                        Enum.TryParse(Red.Text, out Colors color2);
-
-                        MessageBox.Show("Ai ales: " + color2);
+                        Enum.TryParse(Red.Text, out Colors parsedColor);
+                        color = parsedColor;
+                        MessageBox.Show("Ai ales: " + parsedColor);
                        
                     };
+                    x += spacing;
+                    Button Blue = new Button()
+                    {
+                        Size = new Size(width, height),
+                        Location = new Point(x, y),
+                        BackColor = Color.Transparent,
+                        Text = "Blue"
+                    };
+                    Blue.Click += (s, ev) =>
+                    {
+                        Enum.TryParse(Blue.Text, out Colors parsedColor);
+                        color = parsedColor;
+                        MessageBox.Show("Ai ales: " + parsedColor);
 
+                    };
+                    x += spacing;
+                    Button Yellow = new Button()
+                    {
+                        Size = new Size(width, height),
+                        Location = new Point(x, y),
+                        BackColor = Color.Transparent,
+                        Text = "Yellow"
+                    };
+                    Yellow.Click += (s, ev) =>
+                    {
+                        Enum.TryParse(Yellow.Text, out Colors parsedColor);
+                        color = parsedColor;
+                        MessageBox.Show("Ai ales: " + parsedColor);
+
+                    };
+                    x += spacing;
+                    Button Green = new Button()
+                    {
+                        Size = new Size(width, height),
+                        Location = new Point(x, y),
+                        BackColor = Color.Transparent,
+                        Text = "Green"
+                    };
+                    Green.Click += (s, ev) =>
+                    {
+                        Enum.TryParse(Green.Text, out Colors parsedColor);
+                        color = parsedColor;
+                        MessageBox.Show("Ai ales: " + parsedColor);
+
+                    };
                     this.Controls.Add(Red);
+                    this.Controls.Add(Green);
+                    this.Controls.Add(Yellow);
+                    this.Controls.Add(Blue);
+                    
                 }
                 game.ApplyEffect(selectedCard, color);
                 deck.deck_played.Add(selectedCard);

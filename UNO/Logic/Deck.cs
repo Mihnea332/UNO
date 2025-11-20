@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -78,10 +78,10 @@ namespace UNO.Logic
                 }
 
                 deck_played.Clear();
-                deck_played.Add(TopCard); // păstrează TopCard în joc
+                deck_played.Add(TopCard); 
                 deck = deck_temp;
 
-                // Shuffle
+               
                 Random rnd = new Random();
                 for (int i = 0; i < deck.Count; i++)
                 {
