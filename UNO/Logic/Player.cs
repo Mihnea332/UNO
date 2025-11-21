@@ -34,7 +34,7 @@ namespace UNO.Logic
             if (parent == null || Hand == null || Hand.Count == 0) return;
 
             parent.Controls.Clear();
-            int count = Hand.Count();
+            int count = Hand.Count;
             int cardWidth = 80;
             int cardHeight = 120;
             int spacing = -150;

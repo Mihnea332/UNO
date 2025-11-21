@@ -108,26 +108,6 @@ namespace UNO.Logic
             deck.RemoveAt(deck.Count - 1);
             return temp;
         }
-        public void ShowTopCard(Control parent, Card topCard)
-        {
-            parent.Controls.Clear();
-            PictureBox pb = new PictureBox
-            {
-                Size = new Size(80, 120),
-                Location = new Point(10, 10),
-                SizeMode = PictureBoxSizeMode.StretchImage,
-                BackColor = Color.Transparent,
-                Tag=topCard
-
-            };
-            
-            string path = topCard.GetCardName();
-            if (File.Exists(path))
-                pb.Image = Image.FromFile(path);
-            else
-                pb.BackColor = Color.Gray;
-
-            parent.Controls.Add(pb);
-        }
+        
     }
 }

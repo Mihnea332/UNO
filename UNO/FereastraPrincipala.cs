@@ -15,15 +15,15 @@ namespace UNO
     public partial class Form1 : Form
     {
         private Game game;
-        private Player currentPlayer;
-        private Deck deck;
         private Panel panelHand;
         private Panel panelTopCard;
 
         public Form1()
         {
             InitializeComponent();
-            game = new Game(2);   
+            game = new Game(2);
+            game.deck = new Deck();
+            game.currentPlayer = new Player("Mihnea");
         }
         private void PictureBox_Click(object sender, EventArgs e)
         {
@@ -33,20 +33,23 @@ namespace UNO
             Card selectedCard = clickedCard.Tag as Card;
             if (selectedCard == null) return;
 
-            Card topCard = deck.deck_played.LastOrDefault();
-            if (topCard == null) return;
+           
+            if (game.TopCard == null) return;
 
-            if (currentPlayer.IsCardValid(topCard, selectedCard))
+            if (game.currentPlayer.IsCardValid(game.TopCard, selectedCard))
             {
-                currentPlayer.RemoveCard(selectedCard);
-                Colors color=Colors.Red;
+                
+                game.currentPlayer.RemoveCard(selectedCard);
+                Colors color=game.TopCard.color;
                 if(selectedCard.value==Val.Wild||selectedCard.value==Val.WildDrawFour)
                 {
+                    
                     int height = 40;
                     int width = 40;
                     int x = 100;
                     int y = 100;
                     int spacing = 50;
+                    
                     Button Red = new Button()
                     {
                         Size = new Size(width, height),
@@ -54,12 +57,14 @@ namespace UNO
                         BackColor = Color.Transparent,
                         Text="Red"
                     };
+                    
                     Red.Click += (s, ev) =>
                     {
                         Enum.TryParse(Red.Text, out Colors parsedColor);
                         color = parsedColor;
                         MessageBox.Show("Ai ales: " + parsedColor);
-                       
+                        game.ApplyEffect(selectedCard, color);
+                        
                     };
                     x += spacing;
                     Button Blue = new Button()
@@ -74,7 +79,8 @@ namespace UNO
                         Enum.TryParse(Blue.Text, out Colors parsedColor);
                         color = parsedColor;
                         MessageBox.Show("Ai ales: " + parsedColor);
-
+                        game.ApplyEffect(selectedCard, color);
+                        
                     };
                     x += spacing;
                     Button Yellow = new Button()
@@ -83,13 +89,15 @@ namespace UNO
                         Location = new Point(x, y),
                         BackColor = Color.Transparent,
                         Text = "Yellow"
+
                     };
                     Yellow.Click += (s, ev) =>
                     {
                         Enum.TryParse(Yellow.Text, out Colors parsedColor);
                         color = parsedColor;
                         MessageBox.Show("Ai ales: " + parsedColor);
-
+                        game.ApplyEffect(selectedCard, color);
+                        
                     };
                     x += spacing;
                     Button Green = new Button()
@@ -99,24 +107,26 @@ namespace UNO
                         BackColor = Color.Transparent,
                         Text = "Green"
                     };
-                    Green.Click += (s, ev) =>
+                    Green.Click +=  (s, ev) =>
                     {
                         Enum.TryParse(Green.Text, out Colors parsedColor);
                         color = parsedColor;
                         MessageBox.Show("Ai ales: " + parsedColor);
-
+                        game.ApplyEffect(selectedCard, color);
+                        
                     };
                     this.Controls.Add(Red);
                     this.Controls.Add(Green);
                     this.Controls.Add(Yellow);
                     this.Controls.Add(Blue);
                     
+                 
                 }
-                game.ApplyEffect(selectedCard, color);
-                deck.deck_played.Add(selectedCard);
+               
+                game.deck.deck_played.Add(selectedCard);
 
-                deck.ShowTopCard(panelTopCard, selectedCard);
-                currentPlayer.ShowHand(panelHand, PictureBox_Click);
+                game.ShowTopCard(panelTopCard);
+                game.currentPlayer.ShowHand(panelHand, PictureBox_Click);
 
             }
             else
@@ -133,18 +143,19 @@ namespace UNO
             panelHand = panelHandControl;
             panelTopCard = panelTopCardControl;
 
-            currentPlayer = new Player("Mihnea");
-            deck = new Deck();
+            game.currentPlayer = new Player("Mihnea");
+            game.deck = new Deck();
 
-            deck.Generate();
-            deck.Shuffle();
-            deck.Deal(currentPlayer);
+            game.deck.Generate();
+            game.deck.Shuffle();
+            game.deck.Deal(game.currentPlayer);
+            game.currentPlayer.Hand.Add(new WildCard(Colors.None, Val.Wild));
+            game.currentPlayer.Hand.Add(new WildCard(Colors.None, Val.WildDrawFour));
+            game.TopCard = game.deck.GetTopCard();
+            game.deck.deck_played.Add(game.TopCard);
 
-            Card topCard = deck.GetTopCard();
-            deck.deck_played.Add(topCard);
-
-            currentPlayer.ShowHand(panelHand, PictureBox_Click);
-            deck.ShowTopCard(panelTopCard, topCard);
+            game.currentPlayer.ShowHand(panelHand, PictureBox_Click);
+            game.ShowTopCard(panelTopCard);
 
         }
 
@@ -168,9 +179,9 @@ namespace UNO
         private void button1_Click(object sender, EventArgs e)
         {
             
-            Card topCard = deck.deck_played.LastOrDefault();
-            deck.DrawCard(currentPlayer, topCard);
-            currentPlayer.ShowHand(panelHand, PictureBox_Click);
+            Card topCard = game.deck.deck_played[game.deck.deck_played.Count - 1];
+            game.deck.DrawCard(game.currentPlayer, topCard);
+            game.currentPlayer.ShowHand(panelHand, PictureBox_Click);
         }
     }
 }
