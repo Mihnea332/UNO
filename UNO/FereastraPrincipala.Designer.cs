@@ -31,6 +31,7 @@
             this.panelHandControl = new System.Windows.Forms.Panel();
             this.panelTopCardControl = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.SuspendLayout();
             // 
             // panelHandControl
@@ -56,11 +57,21 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.panel1.Location = new System.Drawing.Point(2, 12);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(320, 185);
+            this.panel1.TabIndex = 3;
+            this.panel1.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(782, 461);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.panelHandControl);
             this.Controls.Add(this.panelTopCardControl);
@@ -76,6 +87,7 @@
         private System.Windows.Forms.Panel panelHandControl;
         private System.Windows.Forms.Panel panelTopCardControl;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Panel panel1;
     }
 }
 

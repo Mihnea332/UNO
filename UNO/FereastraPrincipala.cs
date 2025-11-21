@@ -43,7 +43,7 @@ namespace UNO
                 Colors color=game.TopCard.color;
                 if(selectedCard.value==Val.Wild||selectedCard.value==Val.WildDrawFour)
                 {
-                    
+                    panel1.Visible = true;
                     int height = 40;
                     int width = 40;
                     int x = 100;
@@ -54,8 +54,9 @@ namespace UNO
                     {
                         Size = new Size(width, height),
                         Location = new Point(x, y),
-                        BackColor = Color.Transparent,
-                        Text="Red"
+                        BackColor = Color.Red,
+                        Text="Red",
+                        ForeColor = Color.Red
                     };
                     
                     Red.Click += (s, ev) =>
@@ -64,15 +65,17 @@ namespace UNO
                         color = parsedColor;
                         MessageBox.Show("Ai ales: " + parsedColor);
                         game.ApplyEffect(selectedCard, color);
-                        
+                        panel1.Visible = false;
                     };
                     x += spacing;
+                    panel1.Controls.Add(Red);
                     Button Blue = new Button()
                     {
                         Size = new Size(width, height),
                         Location = new Point(x, y),
-                        BackColor = Color.Transparent,
-                        Text = "Blue"
+                        BackColor = Color.Blue,
+                        Text = "Blue",
+                        ForeColor = Color.Blue
                     };
                     Blue.Click += (s, ev) =>
                     {
@@ -80,16 +83,17 @@ namespace UNO
                         color = parsedColor;
                         MessageBox.Show("Ai ales: " + parsedColor);
                         game.ApplyEffect(selectedCard, color);
-                        
+                        panel1.Visible = false;
                     };
                     x += spacing;
+                    panel1.Controls.Add(Blue);
                     Button Yellow = new Button()
                     {
                         Size = new Size(width, height),
                         Location = new Point(x, y),
-                        BackColor = Color.Transparent,
-                        Text = "Yellow"
-
+                        BackColor = Color.Yellow,
+                        Text = "Yellow",
+                        ForeColor = Color.Yellow
                     };
                     Yellow.Click += (s, ev) =>
                     {
@@ -97,15 +101,17 @@ namespace UNO
                         color = parsedColor;
                         MessageBox.Show("Ai ales: " + parsedColor);
                         game.ApplyEffect(selectedCard, color);
-                        
+                        panel1.Visible = false;
                     };
                     x += spacing;
+                    panel1.Controls.Add(Yellow);
                     Button Green = new Button()
                     {
                         Size = new Size(width, height),
                         Location = new Point(x, y),
-                        BackColor = Color.Transparent,
-                        Text = "Green"
+                        BackColor = Color.Green,
+                        Text = "Green",
+                        ForeColor = Color.Green
                     };
                     Green.Click +=  (s, ev) =>
                     {
@@ -113,14 +119,12 @@ namespace UNO
                         color = parsedColor;
                         MessageBox.Show("Ai ales: " + parsedColor);
                         game.ApplyEffect(selectedCard, color);
-                        
+                        panel1.Visible = false;
                     };
-                    this.Controls.Add(Red);
-                    this.Controls.Add(Green);
-                    this.Controls.Add(Yellow);
-                    this.Controls.Add(Blue);
-                    
-                 
+                    panel1.Controls.Add(Green);
+
+
+
                 }
                
                 game.deck.deck_played.Add(selectedCard);
