@@ -21,9 +21,8 @@ namespace UNO
         public Form1()
         {
             InitializeComponent();
-            game = new Game(2);
-            game.deck = new Deck();
-            game.currentPlayer = new Player("Mihnea");
+            game = new Game();
+           
         }
         private void PictureBox_Click(object sender, EventArgs e)
         {
@@ -126,18 +125,20 @@ namespace UNO
 
 
                 }
-               
+
                 game.deck.deck_played.Add(selectedCard);
-
                 game.ShowTopCard(panelTopCard);
+               
+                    game.CurrentPlayerIndex = (game.CurrentPlayerIndex + 1) % 2;
+                    game.currentPlayer = game.Players[game.CurrentPlayerIndex];
+                
+
                 game.currentPlayer.ShowHand(panelHand, PictureBox_Click);
+                
 
             }
-            else
-            {
-                MessageBox.Show("Cartea nu este validă!");
-            }
-           
+
+
         }
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -147,17 +148,14 @@ namespace UNO
             panelHand = panelHandControl;
             panelTopCard = panelTopCardControl;
 
-            game.currentPlayer = new Player("Mihnea");
-            game.deck = new Deck();
+           
 
-            game.deck.Generate();
-            game.deck.Shuffle();
-            game.deck.Deal(game.currentPlayer);
+           
+            
             game.currentPlayer.Hand.Add(new WildCard(Colors.None, Val.Wild));
             game.currentPlayer.Hand.Add(new WildCard(Colors.None, Val.WildDrawFour));
-            game.TopCard = game.deck.GetTopCard();
-            game.deck.deck_played.Add(game.TopCard);
 
+            game.deck.deck_played.Add(game.TopCard);
             game.currentPlayer.ShowHand(panelHand, PictureBox_Click);
             game.ShowTopCard(panelTopCard);
 

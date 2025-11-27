@@ -12,8 +12,12 @@ namespace UNO.Logic
 {
     public class Deck
     {
-        List<Card> deck = new List<Card>();
+        public List<Card> deck;
         public List<Card> deck_played = new List<Card>();
+       public Deck()
+        {
+            deck = new List<Card>();
+        }
         public void Generate()
         {
             foreach (Colors c in Enum.GetValues(typeof(Colors)))

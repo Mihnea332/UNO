@@ -20,12 +20,11 @@ namespace UNO.Logic
         public bool GameOver = false;
         public bool SkipPlayed = false;
         public Player currentPlayer;
-        public Game(int NrOfPlayers)
+        public Game()
         {
-            this.NrOfPlayers = NrOfPlayers;
+            this.NrOfPlayers = 2;
             this.Direction = Directions.Clockwise;
 
-            deck = new Deck();
             deck.Generate();
             deck.Shuffle();
 
@@ -37,44 +36,9 @@ namespace UNO.Logic
                 Players.Add(p);
             }
             TopCard = deck.GetTopCard();
-            this.CurrentPlayerIndex = 0;
+            currentPlayer = Players[0];
         }
-        public void PlayTurn(Card CardToPlay,Card topCard)
-        {
-            Colors ChosenColor = Colors.Red;
-            Player p = Players[CurrentPlayerIndex];
-            if (!p.HasPlayableCard(TopCard))
-            {
-                deck.DrawCard(p, TopCard);
-                Card drawn = p.Hand[p.Hand.Count - 1];
-
-                if (p.IsCardValid(TopCard, drawn))
-                {
-                    p.RemoveCard(drawn);
-                    TopCard = drawn;
-                    deck.deck_played.Add(drawn);
-                    ApplyEffect(drawn, ChosenColor);
-                }
-                NextPlayer();
-                return;
-                    
-            }
-            if (p.IsCardValid(TopCard,CardToPlay))
-            {
-                p.RemoveCard(CardToPlay);
-                this.TopCard = CardToPlay;
-                deck.deck_played.Add(CardToPlay);
-                ApplyEffect(CardToPlay, ChosenColor);
-            }
-            if (p.Hand.Count==0)
-            {
-                Winner = Players[CurrentPlayerIndex];
-                GameOver = true;
-            }
-            if (GameOver) return;
-            NextPlayer();
-
-        }
+        
         public void NextPlayer()
         {
             int i = (SkipPlayed==true) ? 2 : 1;
