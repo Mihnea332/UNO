@@ -12,24 +12,18 @@ namespace UNO.Logic
     {
         public Deck deck=new Deck();
         public List<Player> Players;
-        public Player Winner;
-        public Directions Direction;
         public Card TopCard;
         public int CurrentPlayerIndex;
-        public int NrOfPlayers;
-        public bool GameOver = false;
-        public bool SkipPlayed = false;
         public Player currentPlayer;
         public Game()
         {
-            this.NrOfPlayers = 2;
-            this.Direction = Directions.Clockwise;
+
 
             deck.Generate();
             deck.Shuffle();
 
             Players = new List<Player>();
-            for (int i=0;i<NrOfPlayers;i++)
+            for (int i=0;i<2;i++)
             {
                 Player p = new Player("Player " + (i + 1));
                 deck.Deal(p);
@@ -39,29 +33,18 @@ namespace UNO.Logic
             currentPlayer = Players[0];
         }
         
-        public void NextPlayer()
-        {
-            int i = (SkipPlayed==true) ? 2 : 1;
-            if (Direction == Directions.Clockwise) CurrentPlayerIndex+=i;
-            else CurrentPlayerIndex-=i;
-            CurrentPlayerIndex = (CurrentPlayerIndex + Players.Count) % Players.Count;
-            SkipPlayed = false;
-        }
+
         public void UpdateColor(Colors ChosenColor)
         {
             TopCard.color = ChosenColor;
         }
-         public void ApplyEffect(Card PlayedCard,Colors ChosenColor)
+         public void ApplyEffect(Card PlayedCard,Colors ChosenColor,Player AffectedPlayer)
         {
-            Player AffectedPlayer = Players[(CurrentPlayerIndex + 1) % Players.Count];
+
             switch (PlayedCard.value)
             {
 
-                case Val.Skip:
-                    SkipPlayed = true;
-                    break;
-                case Val.Reverse:
-                    Direction = (Direction == Directions.Clockwise) ? Directions.CounterClockwise : Directions.Clockwise; break;
+
                 case Val.DrawTwo:
                     deck.DrawCard(AffectedPlayer, TopCard);
                     deck.DrawCard(AffectedPlayer, TopCard); 
