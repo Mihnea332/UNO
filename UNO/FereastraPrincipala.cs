@@ -15,8 +15,7 @@ namespace UNO
     public partial class Form1 : Form
     {
         private Game game;
-        private Panel panelHand;
-        private Panel panelTopCard;
+
 
         public Form1()
         {
@@ -42,14 +41,14 @@ namespace UNO
                 Colors color=game.TopCard.color;
                 if(selectedCard.value==Val.Wild||selectedCard.value==Val.WildDrawFour)
                 {
-                    
+                    panelHandControl.Visible = false;
                     panel1.Controls.Clear();
                    
                     panel1.Visible = true;
                     int height = 40;
                     int width = 40;
-                    int x = 100;
-                    int y = 100;
+                    int x = 0;
+                    int y = 0;
                     int spacing = 50;
                     
                     Button Red = new Button()
@@ -65,10 +64,10 @@ namespace UNO
                     {
                         Enum.TryParse(Red.Text, out Colors parsedColor);
                         color = parsedColor;
-                        MessageBox.Show("Ai ales: " + parsedColor);
                         game.ApplyEffect(selectedCard, color, game.Players[(game.CurrentPlayerIndex + 1) % 2]);
                         game.TopCard = selectedCard;
                         panel1.Visible = false;
+                        panelHandControl.Visible = true;
                     };
                     x += spacing;
                     panel1.Controls.Add(Red);
@@ -84,10 +83,11 @@ namespace UNO
                     {
                         Enum.TryParse(Blue.Text, out Colors parsedColor);
                         color = parsedColor;
-                        MessageBox.Show("Ai ales: " + parsedColor);
+                        
                         game.ApplyEffect(selectedCard, color, game.Players[(game.CurrentPlayerIndex + 1) % 2]);
                         game.TopCard = selectedCard;
                         panel1.Visible = false;
+                        panelHandControl.Visible = true;
                     };
                     x += spacing;
                     panel1.Controls.Add(Blue);
@@ -103,10 +103,11 @@ namespace UNO
                     {
                         Enum.TryParse(Yellow.Text, out Colors parsedColor);
                         color = parsedColor;
-                        MessageBox.Show("Ai ales: " + parsedColor);
+                        
                         game.ApplyEffect(selectedCard, color, game.Players[(game.CurrentPlayerIndex + 1) % 2]);
                         game.TopCard = selectedCard;
                         panel1.Visible = false;
+                        panelHandControl.Visible = true;
                     };
                     x += spacing;
                     panel1.Controls.Add(Yellow);
@@ -122,47 +123,43 @@ namespace UNO
                     {
                         Enum.TryParse(Green.Text, out Colors parsedColor);
                         color = parsedColor;
-                        MessageBox.Show("Ai ales: " + parsedColor);
                         game.ApplyEffect(selectedCard, color, game.Players[(game.CurrentPlayerIndex + 1) % 2]);
                         game.TopCard = selectedCard;
                         panel1.Visible = false;
+                        panelHandControl.Visible = true;
                     };
                     panel1.Controls.Add(Green);
 
-
-                    game.currentPlayer.ShowHand(panelHand, PictureBox_Click);
+                    
+                    game.currentPlayer.ShowHand(panelHandControl, PictureBox_Click);
                 }
                 
                 if (selectedCard.value==Val.DrawTwo)
                     game.ApplyEffect(selectedCard, color, game.Players[(game.CurrentPlayerIndex + 1) % 2]);
-                if (selectedCard.value == Val.Skip)
+                if (selectedCard.value == Val.Skip|| selectedCard.value==Val.DrawTwo)
                 {
                     
                     game.currentPlayer.RemoveCard(selectedCard);
                     
                     game.TopCard = selectedCard;
                     game.deck.deck_played.Add(selectedCard);
-                    game.ShowTopCard(panelTopCard);
+                    game.ShowTopCard(panelTopCardControl);
                    
 
 
-                    if (game.currentPlayer.Hand.Count == 0)
-                    {
-                        MessageBox.Show("Player " + game.CurrentPlayerIndex + " a câștigat!");
-                        Application.Exit();
-                    }
+                  
 
                     
                     game.CurrentPlayerIndex = (game.CurrentPlayerIndex + 2) % game.Players.Count;
                     game.currentPlayer = game.Players[game.CurrentPlayerIndex];
 
                     
-                    game.currentPlayer.ShowHand(panelHand, PictureBox_Click);
+                    game.currentPlayer.ShowHand(panelHandControl, PictureBox_Click);
                 }
                 
                 game.TopCard = selectedCard;
                 game.deck.deck_played.Add(selectedCard);
-                game.ShowTopCard(panelTopCard);
+                game.ShowTopCard(panelTopCardControl);
                 if (game.currentPlayer.Hand.Count == 0)
                 {
                     MessageBox.Show("Player" + game.CurrentPlayerIndex + " a castigat");
@@ -170,15 +167,16 @@ namespace UNO
                 }
                 if (selectedCard.value != Val.DrawTwo && selectedCard.value != Val.WildDrawFour && selectedCard.value != Val.Skip)
                 {
+                    
                     game.CurrentPlayerIndex = (game.CurrentPlayerIndex + 1) % 2;
                     game.currentPlayer = game.Players[game.CurrentPlayerIndex];
 
 
-                    game.currentPlayer.ShowHand(panelHand, PictureBox_Click);
+                    game.currentPlayer.ShowHand(panelHandControl, PictureBox_Click);
 
                 }
             }
-
+            
 
         }
         private void Form1_Load(object sender, EventArgs e)
@@ -186,16 +184,15 @@ namespace UNO
             Image original = Image.FromFile(@"..\..\Resources\Deck.png");
             Image resize = new Bitmap(original, new Size(90, 190)); 
             button1.Image = resize;
-            panelHand = panelHandControl;
-            panelTopCard = panelTopCardControl;
-    
+
+
             game.currentPlayer.Hand.Add(new WildCard(Colors.None, Val.Wild));
             game.currentPlayer.Hand.Add(new WildCard(Colors.None, Val.WildDrawFour));
             game.currentPlayer.Hand.Add(new SpecialCard(Colors.Red, Val.Skip));
             game.currentPlayer.Hand.Add(new SpecialCard(Colors.Red, Val.Skip));
             game.deck.deck_played.Add(game.TopCard);
-            game.currentPlayer.ShowHand(panelHand, PictureBox_Click);
-            game.ShowTopCard(panelTopCard);
+            game.currentPlayer.ShowHand(panelHandControl, PictureBox_Click);
+            game.ShowTopCard(panelTopCardControl);
 
         }
 
@@ -221,10 +218,9 @@ namespace UNO
             
             Card topCard = game.deck.deck_played[game.deck.deck_played.Count - 1];
             game.deck.DrawCard(game.currentPlayer, topCard);
-
             game.CurrentPlayerIndex = (game.CurrentPlayerIndex + 1) % 2;
             game.currentPlayer = game.Players[game.CurrentPlayerIndex];
-            game.currentPlayer.ShowHand(panelHand, PictureBox_Click);
+            game.currentPlayer.ShowHand(panelHandControl, PictureBox_Click);
         }
     }
 }
