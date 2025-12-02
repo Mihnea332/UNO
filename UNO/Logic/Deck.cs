@@ -13,7 +13,7 @@ namespace UNO.Logic
     public class Deck
     {
         public List<Card> deck;
-        public List<Card> deck_played = new List<Card>();
+        public List<Card> deck_played;
        public Deck()
         {
             deck = new List<Card>();

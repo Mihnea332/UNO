@@ -79,11 +79,7 @@ namespace UNO.Logic
         }
 
 
-        public void ShowHand()
-        {
-            foreach (Card c in Hand)
-                Console.Write(c + " ");
-        }
+  
         public bool HasPlayableCard(Card TopCard)
         {
             foreach (var x in Hand)

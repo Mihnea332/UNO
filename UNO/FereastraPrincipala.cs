@@ -42,6 +42,7 @@ namespace UNO
                 Colors color=game.TopCard.color;
                 if(selectedCard.value==Val.Wild||selectedCard.value==Val.WildDrawFour)
                 {
+                    
                     panel1.Controls.Clear();
                    
                     panel1.Visible = true;
@@ -129,21 +130,22 @@ namespace UNO
                     panel1.Controls.Add(Green);
 
 
-
+                    game.currentPlayer.ShowHand(panelHand, PictureBox_Click);
                 }
-                if(selectedCard.value==Val.DrawTwo)
+                
+                if (selectedCard.value==Val.DrawTwo)
                     game.ApplyEffect(selectedCard, color, game.Players[(game.CurrentPlayerIndex + 1) % 2]);
                 if (selectedCard.value == Val.Skip)
                 {
                     
                     game.currentPlayer.RemoveCard(selectedCard);
-
                     
                     game.TopCard = selectedCard;
                     game.deck.deck_played.Add(selectedCard);
                     game.ShowTopCard(panelTopCard);
+                   
 
-                    
+
                     if (game.currentPlayer.Hand.Count == 0)
                     {
                         MessageBox.Show("Player " + game.CurrentPlayerIndex + " a câștigat!");
@@ -157,7 +159,7 @@ namespace UNO
                     
                     game.currentPlayer.ShowHand(panelHand, PictureBox_Click);
                 }
-                game.currentPlayer.ShowHand();
+               
                 game.TopCard = selectedCard;
                 game.deck.deck_played.Add(selectedCard);
                 game.ShowTopCard(panelTopCard);

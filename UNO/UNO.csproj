@@ -55,7 +55,6 @@
     </Compile>
     <Compile Include="Logic\Deck.cs" />
     <Compile Include="Logic\Game.cs" />
-    <Compile Include="Logic\GameTimer.cs" />
     <Compile Include="Logic\Player.cs" />
     <Compile Include="Model\Card.cs" />
     <Compile Include="Model\Enums.cs" />
