@@ -10,7 +10,7 @@ namespace UNO.Logic
 {
     public class Game
     {
-        public Deck deck=new Deck();
+        public Deck deck;
         public List<Player> Players;
         public Card TopCard;
         public int CurrentPlayerIndex;
@@ -18,7 +18,7 @@ namespace UNO.Logic
         public Game()
         {
 
-
+            deck = new Deck();
             deck.Generate();
             deck.Shuffle();
 

@@ -13,10 +13,10 @@ namespace UNO.Logic
     public class Player
     {
         string Name;
-        public List<Card> Hand = new List<Card>();
-        public event Action<Card> CardClicked;
+        public List<Card> Hand;
         public Player(string Name)
         {
+            Hand = new List<Card>();
             this.Name = Name;
             
         }

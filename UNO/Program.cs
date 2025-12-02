@@ -12,7 +12,16 @@ namespace UNO
         [STAThread]
         static void Main()
         {
- 
+            Player p1 = new Player("Mihnea");
+            Deck d = new Deck();
+             d.Generate();
+             d.Shuffle();
+             d.Print();
+             Console.WriteLine();
+             d.Deal(p1);
+             Console.WriteLine();
+             Console.WriteLine();
+             d.Print();
          
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
