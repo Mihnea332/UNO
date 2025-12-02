@@ -17,6 +17,7 @@ namespace UNO.Logic
        public Deck()
         {
             deck = new List<Card>();
+            deck_played = new List<Card>();
         }
         public void Generate()
         {

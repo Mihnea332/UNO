@@ -21,13 +21,7 @@ namespace UNO.Model
         }
         public abstract override string ToString();
         public abstract string GetCardName();
-        /*{
-            string ValuePart =value.ToString();
-            string ColorPart =color.ToString();
-            if (ValuePart==Val.Wild.ToString() || ValuePart==Val.WildDrawFour.ToString() ) return Path.Combine(Application.StartupPath, @"..\..\Resources", ValuePart+".png");
-
-            return Path.Combine(Application.StartupPath, @"..\..\Resources", ColorPart + "_" + ValuePart + ".png");
-        }*/
+    
        
         
     }
