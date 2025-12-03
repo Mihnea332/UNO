@@ -21,7 +21,9 @@ namespace UNO
         {
             InitializeComponent();
             game = new Game();
-           
+            this.FormClosed += (s, e) => Application.Exit();
+
+
         }
         private void PictureBox_Click(object sender, EventArgs e)
         {

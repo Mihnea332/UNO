@@ -47,11 +47,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FereastraPrincipala.cs">
+    <Compile Include="Joc.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FereastraPrincipala.Designer.cs">
-      <DependentUpon>FereastraPrincipala.cs</DependentUpon>
+    <Compile Include="Joc.Designer.cs">
+      <DependentUpon>Joc.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainMenu.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainMenu.Designer.cs">
+      <DependentUpon>MainMenu.cs</DependentUpon>
     </Compile>
     <Compile Include="Logic\Deck.cs" />
     <Compile Include="Logic\Game.cs" />
@@ -63,8 +69,11 @@
     <Compile Include="Model\WildCard.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="FereastraPrincipala.resx">
-      <DependentUpon>FereastraPrincipala.cs</DependentUpon>
+    <EmbeddedResource Include="Joc.resx">
+      <DependentUpon>Joc.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainMenu.resx">
+      <DependentUpon>MainMenu.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
