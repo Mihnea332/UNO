@@ -44,7 +44,6 @@ namespace UNO.Logic
             switch (PlayedCard.value)
             {
 
-
                 case Val.DrawTwo:
                     deck.DrawCard(AffectedPlayer, TopCard);
                     deck.DrawCard(AffectedPlayer, TopCard); 

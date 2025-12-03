@@ -36,26 +36,23 @@
             // 
             // panelHandControl
             // 
-            this.panelHandControl.Location = new System.Drawing.Point(3, 356);
-            this.panelHandControl.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panelHandControl.Location = new System.Drawing.Point(2, 289);
             this.panelHandControl.Name = "panelHandControl";
-            this.panelHandControl.Size = new System.Drawing.Size(1024, 169);
+            this.panelHandControl.Size = new System.Drawing.Size(768, 137);
             this.panelHandControl.TabIndex = 0;
             // 
             // panelTopCardControl
             // 
-            this.panelTopCardControl.Location = new System.Drawing.Point(462, 130);
-            this.panelTopCardControl.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panelTopCardControl.Location = new System.Drawing.Point(346, 106);
             this.panelTopCardControl.Name = "panelTopCardControl";
-            this.panelTopCardControl.Size = new System.Drawing.Size(225, 181);
+            this.panelTopCardControl.Size = new System.Drawing.Size(169, 147);
             this.panelTopCardControl.TabIndex = 1;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(919, 15);
-            this.button1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button1.Location = new System.Drawing.Point(689, 12);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(108, 146);
+            this.button1.Size = new System.Drawing.Size(81, 119);
             this.button1.TabIndex = 2;
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
@@ -63,23 +60,21 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.Control;
-            this.panel1.Location = new System.Drawing.Point(400, 319);
-            this.panel1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panel1.Location = new System.Drawing.Point(300, 250);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(427, 93);
+            this.panel1.Size = new System.Drawing.Size(215, 40);
             this.panel1.TabIndex = 3;
             this.panel1.Visible = false;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1043, 567);
+            this.ClientSize = new System.Drawing.Size(782, 461);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.panelHandControl);
             this.Controls.Add(this.panelTopCardControl);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);

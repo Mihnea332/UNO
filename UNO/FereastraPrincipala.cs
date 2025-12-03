@@ -41,7 +41,7 @@ namespace UNO
                 Colors color=game.TopCard.color;
                 if(selectedCard.value==Val.Wild||selectedCard.value==Val.WildDrawFour)
                 {
-                    panelHandControl.Visible = false;
+                    panelHandControl.Enabled = false;
                     panel1.Controls.Clear();
                    
                     panel1.Visible = true;
@@ -67,7 +67,7 @@ namespace UNO
                         game.ApplyEffect(selectedCard, color, game.Players[(game.CurrentPlayerIndex + 1) % 2]);
                         game.TopCard = selectedCard;
                         panel1.Visible = false;
-                        panelHandControl.Visible = true;
+                        panelHandControl.Enabled = true;
                     };
                     x += spacing;
                     panel1.Controls.Add(Red);
@@ -87,7 +87,7 @@ namespace UNO
                         game.ApplyEffect(selectedCard, color, game.Players[(game.CurrentPlayerIndex + 1) % 2]);
                         game.TopCard = selectedCard;
                         panel1.Visible = false;
-                        panelHandControl.Visible = true;
+                        panelHandControl.Enabled = true;
                     };
                     x += spacing;
                     panel1.Controls.Add(Blue);
@@ -107,7 +107,7 @@ namespace UNO
                         game.ApplyEffect(selectedCard, color, game.Players[(game.CurrentPlayerIndex + 1) % 2]);
                         game.TopCard = selectedCard;
                         panel1.Visible = false;
-                        panelHandControl.Visible = true;
+                        panelHandControl.Enabled = true;
                     };
                     x += spacing;
                     panel1.Controls.Add(Yellow);
@@ -126,7 +126,7 @@ namespace UNO
                         game.ApplyEffect(selectedCard, color, game.Players[(game.CurrentPlayerIndex + 1) % 2]);
                         game.TopCard = selectedCard;
                         panel1.Visible = false;
-                        panelHandControl.Visible = true;
+                        panelHandControl.Enabled = true;
                     };
                     panel1.Controls.Add(Green);
 
@@ -145,11 +145,7 @@ namespace UNO
                     game.deck.deck_played.Add(selectedCard);
                     game.ShowTopCard(panelTopCardControl);
                    
-
-
                   
-
-                    
                     game.CurrentPlayerIndex = (game.CurrentPlayerIndex + 2) % game.Players.Count;
                     game.currentPlayer = game.Players[game.CurrentPlayerIndex];
 

@@ -80,18 +80,19 @@ namespace UNO.Logic
 
 
   
-        public bool HasPlayableCard(Card TopCard)
-        {
-            foreach (var x in Hand)
-                if (x.color == TopCard.color || x.value == TopCard.value) return true;
-            return false;
-        }
-        public bool IsCardValid(Card TopCard, Card CardToPlay)
-        {
-            if (TopCard.color == CardToPlay.color || TopCard.value == CardToPlay.value || CardToPlay.value == Val.Wild || CardToPlay.value == Val.WildDrawFour||TopCard.value==Val.Wild)
+
+        public bool IsCardValid(Card TopCard, Card CardToPlay) { 
+        if (CardToPlay.value == Val.WildDrawFour || CardToPlay.value==Val.Wild)
+            
+               
+                return true;
+            
+
+            
+            if (TopCard.color == CardToPlay.color || TopCard.value == CardToPlay.value)
                 return true;
             return false;
-        }
+            }
         public void PlayCard(Card TopCard,Card card)
         {
            
