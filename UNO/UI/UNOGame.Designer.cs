@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.panelHandControl = new System.Windows.Forms.Panel();
             this.panelTopCardControl = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
@@ -36,6 +37,7 @@
             // 
             // panelHandControl
             // 
+            this.panelHandControl.BackColor = System.Drawing.Color.Transparent;
             this.panelHandControl.Location = new System.Drawing.Point(2, 289);
             this.panelHandControl.Name = "panelHandControl";
             this.panelHandControl.Size = new System.Drawing.Size(768, 137);
@@ -43,9 +45,10 @@
             // 
             // panelTopCardControl
             // 
+            this.panelTopCardControl.BackColor = System.Drawing.Color.Transparent;
             this.panelTopCardControl.Location = new System.Drawing.Point(346, 106);
             this.panelTopCardControl.Name = "panelTopCardControl";
-            this.panelTopCardControl.Size = new System.Drawing.Size(169, 147);
+            this.panelTopCardControl.Size = new System.Drawing.Size(110, 147);
             this.panelTopCardControl.TabIndex = 1;
             // 
             // button1
@@ -59,10 +62,10 @@
             // 
             // panel1
             // 
-            this.panel1.BackColor = System.Drawing.SystemColors.Control;
-            this.panel1.Location = new System.Drawing.Point(300, 250);
+            this.panel1.BackColor = System.Drawing.Color.Transparent;
+            this.panel1.Location = new System.Drawing.Point(307, 243);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(215, 40);
+            this.panel1.Size = new System.Drawing.Size(188, 40);
             this.panel1.TabIndex = 3;
             this.panel1.Visible = false;
             // 
@@ -70,11 +73,15 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.Control;
+            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(782, 461);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.panelHandControl);
             this.Controls.Add(this.panelTopCardControl);
+            this.DoubleBuffered = true;
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);

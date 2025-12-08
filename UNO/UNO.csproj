@@ -47,16 +47,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Joc.cs">
+    <Compile Include="UI\UNOGame.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Joc.Designer.cs">
-      <DependentUpon>Joc.cs</DependentUpon>
+    <Compile Include="UI\UNOGame.Designer.cs">
+      <DependentUpon>UNOGame.cs</DependentUpon>
     </Compile>
-    <Compile Include="MainMenu.cs">
+    <Compile Include="UI\MainMenu.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainMenu.Designer.cs">
+    <Compile Include="UI\MainMenu.Designer.cs">
       <DependentUpon>MainMenu.cs</DependentUpon>
     </Compile>
     <Compile Include="Logic\Deck.cs" />
@@ -69,10 +69,10 @@
     <Compile Include="Model\WildCard.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Joc.resx">
-      <DependentUpon>Joc.cs</DependentUpon>
+    <EmbeddedResource Include="UI\UNOGame.resx">
+      <DependentUpon>UNOGame.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MainMenu.resx">
+    <EmbeddedResource Include="UI\MainMenu.resx">
       <DependentUpon>MainMenu.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -98,9 +98,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="UI\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Resources\Deck1.png" />
   </ItemGroup>
