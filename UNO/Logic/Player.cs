@@ -13,7 +13,11 @@ namespace UNO.Logic
     public class Player
     {
         string Name;
-        public List<Card> Hand;
+        private List<Card> Hand;
+        public List<Card> getHand()
+        {
+            return Hand;
+        }
         public Player(string Name)
         {
             Hand = new List<Card>();

@@ -34,13 +34,13 @@ namespace UNO
             if (selectedCard == null) return;
 
            
-            if (game.TopCard == null) return;
+            if (game.getTopCard() == null) return;
 
-            if (game.currentPlayer.IsCardValid(game.TopCard, selectedCard))
+            if (game.getcurrentPlayer().IsCardValid(game.getTopCard(), selectedCard))
             {
                 
-                game.currentPlayer.RemoveCard(selectedCard);
-                Colors color=game.TopCard.color;
+                game.getcurrentPlayer().RemoveCard(selectedCard);
+                Colors color=game.getTopCard().color;
                 if(selectedCard.value==Val.Wild||selectedCard.value==Val.WildDrawFour)
                 {
                     panelHandControl.Enabled = false;
@@ -66,8 +66,8 @@ namespace UNO
                     {
                         Enum.TryParse(Red.Text, out Colors parsedColor);
                         color = parsedColor;
-                        game.ApplyEffect(selectedCard, color, game.Players[(game.CurrentPlayerIndex + 1) % 2]);
-                        game.TopCard = selectedCard;
+                        game.ApplyEffect(selectedCard, color, game.getPlayers()[(game.getCurrentPlayerIndex() + 1) % 2]);
+                        game.setTopCard(selectedCard);
                         panel1.Visible = false;
                         panelHandControl.Enabled = true;
                     };
@@ -86,8 +86,8 @@ namespace UNO
                         Enum.TryParse(Blue.Text, out Colors parsedColor);
                         color = parsedColor;
                         
-                        game.ApplyEffect(selectedCard, color, game.Players[(game.CurrentPlayerIndex + 1) % 2]);
-                        game.TopCard = selectedCard;
+                        game.ApplyEffect(selectedCard, color, game.getPlayers()[(game.getCurrentPlayerIndex() + 1) % 2]);
+                        game.setTopCard(selectedCard);
                         panel1.Visible = false;
                         panelHandControl.Enabled = true;
                     };
@@ -106,8 +106,8 @@ namespace UNO
                         Enum.TryParse(Yellow.Text, out Colors parsedColor);
                         color = parsedColor;
                         
-                        game.ApplyEffect(selectedCard, color, game.Players[(game.CurrentPlayerIndex + 1) % 2]);
-                        game.TopCard = selectedCard;
+                        game.ApplyEffect(selectedCard, color, game.getPlayers()[(game.getCurrentPlayerIndex() + 1) % 2]);
+                        game.setTopCard(selectedCard);
                         panel1.Visible = false;
                         panelHandControl.Enabled = true;
                     };
@@ -125,52 +125,52 @@ namespace UNO
                     {
                         Enum.TryParse(Green.Text, out Colors parsedColor);
                         color = parsedColor;
-                        game.ApplyEffect(selectedCard, color, game.Players[(game.CurrentPlayerIndex + 1) % 2]);
-                        game.TopCard = selectedCard;
+                        game.ApplyEffect(selectedCard, color, game.getPlayers()[(game.getCurrentPlayerIndex() + 1) % 2]);
+                        game.setTopCard(selectedCard);
                         panel1.Visible = false;
                         panelHandControl.Enabled = true;
                     };
                     panel1.Controls.Add(Green);
 
                     
-                    game.currentPlayer.ShowHand(panelHandControl, PictureBox_Click);
+                    game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
                 }
                 
                 if (selectedCard.value==Val.DrawTwo)
-                    game.ApplyEffect(selectedCard, color, game.Players[(game.CurrentPlayerIndex + 1) % 2]);
+                    game.ApplyEffect(selectedCard, color, game.getPlayers()[(game.getCurrentPlayerIndex() + 1) % 2]);
                 if (selectedCard.value == Val.Skip|| selectedCard.value==Val.DrawTwo)
                 {
                     
-                    game.currentPlayer.RemoveCard(selectedCard);
-                    
-                    game.TopCard = selectedCard;
-                    game.deck.deck_played.Add(selectedCard);
+                    game.getcurrentPlayer().RemoveCard(selectedCard);
+
+                    game.setTopCard(selectedCard); 
+                    game.getdeck().deck_played.Add(selectedCard);
                     game.ShowTopCard(panelTopCardControl);
-                   
-                  
-                    game.CurrentPlayerIndex = (game.CurrentPlayerIndex + 2) % game.Players.Count;
-                    game.currentPlayer = game.Players[game.CurrentPlayerIndex];
+
+
+                    game.setCurrentPlayerIndex((game.getCurrentPlayerIndex() + 2) % game.getPlayers().Count);
+                    game.setcurrentPlayer(game.getPlayers()[game.getCurrentPlayerIndex()]);
 
                     
-                    game.currentPlayer.ShowHand(panelHandControl, PictureBox_Click);
+                    game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
                 }
-                
-                game.TopCard = selectedCard;
-                game.deck.deck_played.Add(selectedCard);
+
+                game.setTopCard(selectedCard);
+                game.getdeck().deck_played.Add(selectedCard);
                 game.ShowTopCard(panelTopCardControl);
-                if (game.currentPlayer.Hand.Count == 0)
+                if (game.getcurrentPlayer().getHand().Count == 0)
                 {
-                    MessageBox.Show("Player" + game.CurrentPlayerIndex + " a castigat");
+                    MessageBox.Show("Player" + game.getCurrentPlayerIndex() + " a castigat");
                     Application.Exit(); 
                 }
                 if (selectedCard.value != Val.DrawTwo && selectedCard.value != Val.WildDrawFour && selectedCard.value != Val.Skip)
                 {
-                    
-                    game.CurrentPlayerIndex = (game.CurrentPlayerIndex + 1) % 2;
-                    game.currentPlayer = game.Players[game.CurrentPlayerIndex];
+
+                    game.setCurrentPlayerIndex((game.getCurrentPlayerIndex() + 2) % game.getPlayers().Count);
+                    game.setCurrentPlayerIndex((game.getCurrentPlayerIndex() + 2) % game.getPlayers().Count);
 
 
-                    game.currentPlayer.ShowHand(panelHandControl, PictureBox_Click);
+                    game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
 
                 }
             }
@@ -184,12 +184,12 @@ namespace UNO
             button1.Image = resize;
 
 
-            game.currentPlayer.Hand.Add(new WildCard(Colors.None, Val.Wild));
-            game.currentPlayer.Hand.Add(new WildCard(Colors.None, Val.WildDrawFour));
-            game.currentPlayer.Hand.Add(new SpecialCard(Colors.Red, Val.Skip));
-            game.currentPlayer.Hand.Add(new SpecialCard(Colors.Red, Val.Skip));
-            game.deck.deck_played.Add(game.TopCard);
-            game.currentPlayer.ShowHand(panelHandControl, PictureBox_Click);
+            game.getcurrentPlayer().getHand().Add(new WildCard(Colors.None, Val.Wild));
+            game.getcurrentPlayer().getHand().Add(new WildCard(Colors.None, Val.WildDrawFour));
+            game.getcurrentPlayer().getHand().Add(new SpecialCard(Colors.Red, Val.Skip));
+            game.getcurrentPlayer().getHand().Add(new SpecialCard(Colors.Red, Val.Skip));
+            game.getdeck().deck_played.Add(game.getTopCard());
+            game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
             game.ShowTopCard(panelTopCardControl);
 
         }
@@ -214,11 +214,11 @@ namespace UNO
         private void button1_Click(object sender, EventArgs e)
         {
             
-            Card topCard = game.deck.deck_played[game.deck.deck_played.Count - 1];
-            game.deck.DrawCard(game.currentPlayer, topCard);
-            game.CurrentPlayerIndex = (game.CurrentPlayerIndex + 1) % 2;
-            game.currentPlayer = game.Players[game.CurrentPlayerIndex];
-            game.currentPlayer.ShowHand(panelHandControl, PictureBox_Click);
+            Card topCard = game.getdeck().deck_played[game.getdeck().deck_played.Count - 1];
+            game.getdeck().DrawCard(game.getcurrentPlayer(), topCard);
+            game.setCurrentPlayerIndex((game.getCurrentPlayerIndex() + 2) % game.getPlayers().Count);
+            game.setcurrentPlayer(game.getPlayers()[game.getCurrentPlayerIndex()]);
+            game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
         }
     }
 }

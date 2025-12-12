@@ -10,11 +10,43 @@ namespace UNO.Logic
 {
     public class Game
     {
-        public Deck deck;
-        public List<Player> Players;
-        public Card TopCard;
-        public int CurrentPlayerIndex;
-        public Player currentPlayer;
+         private Deck deck;
+        private List<Player> Players;
+          private Card TopCard;
+        private int CurrentPlayerIndex;
+        private Player currentPlayer;
+        public Deck getdeck()
+        {
+            return deck;
+        }
+        public List<Player> getPlayers()
+        {
+            return Players;
+        }
+        public Card getTopCard()
+        {
+            return TopCard;
+        }
+        public void setTopCard(Card TopCard)
+        {
+            this.TopCard = TopCard;
+        }
+        public int getCurrentPlayerIndex()
+        {
+            return CurrentPlayerIndex;
+        }
+        public void setCurrentPlayerIndex(int CurrentPlayerIndex)
+        {
+            this.CurrentPlayerIndex = CurrentPlayerIndex;
+        }
+        public Player getcurrentPlayer()
+        {
+            return currentPlayer;
+        }
+        public void setcurrentPlayer(Player currentPlayer)
+        {
+            this.currentPlayer = currentPlayer;
+        }
         public Game()
         {
 
