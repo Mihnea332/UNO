@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -67,6 +70,10 @@
     <Compile Include="Model\NormalCard.cs" />
     <Compile Include="Model\SpecialCard.cs" />
     <Compile Include="Model\WildCard.cs" />
+    <Compile Include="Network\SmallMessages.cs" />
+    <Compile Include="Network\NetworkClient.cs" />
+    <Compile Include="Network\ClientSession.cs" />
+    <Compile Include="Network\ServerManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="UI\UNOGame.resx">
