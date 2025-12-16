@@ -12,12 +12,12 @@ using UNO.Model;
 using UNO.Logic;
 namespace UNO
 {
-    public partial class Form1 : Form
+    public partial class UNOServer : Form
     {
         private Game game;
 
 
-        public Form1()
+        public UNOServer()
         {
             InitializeComponent();
             game = new Game();

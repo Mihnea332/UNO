@@ -64,8 +64,20 @@ namespace UNO.Logic
             TopCard = deck.GetTopCard();
             currentPlayer = Players[0];
         }
-        
-
+        public void AdvanceTurn()
+        {
+            CurrentPlayerIndex++;
+            if (CurrentPlayerIndex >= Players.Count)
+                CurrentPlayerIndex = 0;
+            currentPlayer = Players[CurrentPlayerIndex];
+        }
+        public void AfterPlayerPlays(Card playedCard,Colors chosenColor)
+        {
+            setTopCard(playedCard);
+            Player affected = Players[(CurrentPlayerIndex + 1) % Players.Count];
+            ApplyEffect(playedCard, chosenColor, affected);
+            AdvanceTurn();
+        }
         public void UpdateColor(Colors ChosenColor)
         {
             TopCard.color = ChosenColor;

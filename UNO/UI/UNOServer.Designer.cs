@@ -1,6 +1,6 @@
 ﻿namespace UNO
 {
-    partial class Form1
+    partial class UNOServer
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UNOServer));
             this.panelHandControl = new System.Windows.Forms.Panel();
             this.panelTopCardControl = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
