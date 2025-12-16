@@ -343,12 +343,13 @@ namespace UNO.Network
             {
                 string pid = kvp.Key;
                 Player player = kvp.Value;
+                List<Card> hand = player.getHand();
 
                 var playerPublic = new PlayerPublic
                 {
                     Id = pid,
                     Name = player.Name,
-                    CardCount = player.getHand().Count,
+                    CardCount = hand.Count,
                     Hand = null // Only show own hand
                 };
 
@@ -356,7 +357,7 @@ namespace UNO.Network
                 if (pid == playerId)
                 {
                     playerPublic.Hand = new List<CardDto>();
-                    foreach (var card in player.getHand())
+                    foreach (var card in hand)
                     {
                         playerPublic.Hand.Add(CardMapper.MapCardToDto(card));
                     }
