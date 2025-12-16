@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace UNO.Logic
 {
-    public class Message
+    public class UNOMessage
     {
         public string Type { get; set; }
         public string Color { get; set; }
+        public string ChosenColor { get; set; }
         public string Value { get; set; }
         public int PlayerId { get; set; }
         public string Payload { get; set; }

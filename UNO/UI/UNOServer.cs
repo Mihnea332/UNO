@@ -1,28 +1,112 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Text;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
-using UNO.Model;
 using UNO.Logic;
+using UNO.Model;
 namespace UNO
 {
     public partial class UNOServer : Form
     {
-        private Game game;
-
-
+        private Game game; 
+        public TcpListener server;
+        public Thread listenThread;
+        public bool running;
+        public NetworkStream clientStream; 
+        public StreamReader citire;
+        public StreamWriter scriere;
         public UNOServer()
         {
             InitializeComponent();
             game = new Game();
+            server = new TcpListener(System.Net.IPAddress.Any, 3000);
+            server.Start();
+            running = true;
+            listenThread = new Thread(ListenLoop);
+            listenThread.Start();
             this.FormClosed += (s, e) => Application.Exit();
 
+
+
+        }
+        private void ListenLoop()
+        {
+            while (running) 
+            { 
+                Socket socket = server.AcceptSocket();
+                clientStream = new NetworkStream(socket);
+                citire = new StreamReader(clientStream);
+                scriere = new StreamWriter(clientStream);
+                scriere.AutoFlush = true;
+                while (running)
+                {
+                    string line = citire.ReadLine();
+                    if (line == null) break;
+                    UNOMessage msg = JsonConvert.DeserializeObject<UNOMessage>(line);
+                    HandleClientMessage(msg);
+                }
+
+            }
+        }
+
+        private void HandleClientMessage(UNOMessage msg)
+        {
+            switch (msg.Type)
+            { case "PLAY": HandlePlay(msg);
+                    break;
+                case "DRAW": HandleDraw(msg);
+                    break;
+                default:
+                    break;
+            }
+        }
+        private void HandlePlay(UNOMessage msg)
+        {
+            Player player = game.getPlayers()[msg.PlayerId];
+
+            Card card = null;
+            List<Card> hand = player.getHand();
+
+            for (int i = 0; i < hand.Count; i++)
+            {
+                Card c = hand[i];
+                if (c.color.ToString() == msg.Color &&
+                    c.value.ToString() == msg.Value)
+                {
+                    card = c;
+                    break;
+                }
+            }
+
+            if (card == null)
+                return;
+
+            if (!player.IsCardValid(game.getTopCard(), card))
+                return;
+
+            player.PlayCard(game.getTopCard(), card);
+
+            Colors chosenColor;
+            if (!Enum.TryParse(msg.ChosenColor, out chosenColor))
+                return;
+
+            game.AfterPlayerPlays(card, chosenColor);
+
+            SendGameStateToClient();
+        }
+
+        private void HandleDraw(UNOMessage msg)
+        {
 
         }
         private void PictureBox_Click(object sender, EventArgs e)
