@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json;
 using UNO.Model;
 
 namespace UNO.Network
@@ -14,7 +15,7 @@ namespace UNO.Network
     public class MessageRaw
     {
         public string Type { get; set; }
-        public System.Text.Json.JsonElement Payload { get; set; }
+        public JsonElement Payload { get; set; }
     }
 
     // Client -> Server: Join game request

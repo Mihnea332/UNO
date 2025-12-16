@@ -8,13 +8,14 @@ using System.Threading.Tasks;
 
 namespace UNO.Network
 {
-    public class ClientSession
+    public class ClientSession : IDisposable
     {
         private TcpClient _client;
         private StreamReader _reader;
         private StreamWriter _writer;
         private CancellationTokenSource _cts;
         private bool _isActive;
+        private bool _disposed;
 
         // JSON serializer options with camelCase
         private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
@@ -30,6 +31,7 @@ namespace UNO.Network
         {
             _client = client;
             _isActive = true;
+            _disposed = false;
             
             var stream = client.GetStream();
             _reader = new StreamReader(stream, Encoding.UTF8);
@@ -111,6 +113,14 @@ namespace UNO.Network
             {
                 // Ignore cleanup errors
             }
+        }
+
+        public void Dispose()
+        {
+            if (_disposed) return;
+            
+            _disposed = true;
+            Close();
         }
     }
 }

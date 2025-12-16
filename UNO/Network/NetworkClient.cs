@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace UNO.Network
 {
-    public class NetworkClient
+    public class NetworkClient : IDisposable
     {
         // Events
         public Action<ServerStatePayload> OnStateReceived;
@@ -22,6 +22,7 @@ namespace UNO.Network
         private StreamWriter _writer;
         private CancellationTokenSource _cts;
         private bool _isConnected;
+        private bool _disposed;
 
         // JSON serializer options with camelCase
         private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
@@ -33,6 +34,7 @@ namespace UNO.Network
         public NetworkClient()
         {
             _isConnected = false;
+            _disposed = false;
         }
 
         public async Task ConnectAsync(string ip, int port)
@@ -63,9 +65,9 @@ namespace UNO.Network
             }
         }
 
-        public async Task DisconnectAsync()
+        public Task DisconnectAsync()
         {
-            if (!_isConnected) return;
+            if (!_isConnected) return Task.CompletedTask;
 
             try
             {
@@ -84,7 +86,7 @@ namespace UNO.Network
                 OnLog?.Invoke($"Disconnect error: {ex.Message}");
             }
             
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public async Task SendMessageAsync<T>(string type, T payload)
@@ -196,6 +198,27 @@ namespace UNO.Network
                 {
                     await DisconnectAsync();
                 }
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_disposed) return;
+            
+            _disposed = true;
+            
+            try
+            {
+                _isConnected = false;
+                _cts?.Cancel();
+                
+                _writer?.Close();
+                _reader?.Close();
+                _client?.Close();
+            }
+            catch
+            {
+                // Ignore cleanup errors during disposal
             }
         }
     }
