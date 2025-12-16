@@ -12,7 +12,8 @@ namespace UNO.Logic
 {
     public class Player
     {
-        string Name;
+        public string Name { get; set; }
+        public string ID { get; set; }
         private List<Card> Hand;
         public List<Card> getHand()
         {
@@ -22,7 +23,7 @@ namespace UNO.Logic
         {
             Hand = new List<Card>();
             this.Name = Name;
-            
+            this.ID = Guid.NewGuid().ToString();
         }
         public void AddCard(Card card)
         {
