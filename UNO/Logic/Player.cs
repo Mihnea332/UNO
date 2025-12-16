@@ -19,10 +19,10 @@ namespace UNO.Logic
         {
             return Hand;
         }
-        public Player(string Name)
+        public Player(string name)
         {
             Hand = new List<Card>();
-            this.Name = Name;
+            this.Name = name;
             this.ID = Guid.NewGuid().ToString();
         }
         public void AddCard(Card card)

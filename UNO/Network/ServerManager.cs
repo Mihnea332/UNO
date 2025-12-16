@@ -187,10 +187,9 @@ namespace UNO.Network
                 return;
             }
 
-            // Create player
-            string playerId = Guid.NewGuid().ToString();
+            // Create player (Player constructor auto-generates ID)
             Player player = new Player(payload.PlayerName);
-            player.ID = playerId;
+            string playerId = player.ID;
 
             // Deal initial hand (placeholder - typically 7 cards)
             // TODO: Use proper game logic for dealing cards
@@ -253,7 +252,8 @@ namespace UNO.Network
             // For MVP, just allow any card to be played
             
             // Find and remove the card from player's hand
-            Card matchingCard = player.getHand().FirstOrDefault(c => 
+            List<Card> hand = player.getHand();
+            Card matchingCard = hand.FirstOrDefault(c => 
                 c.color == cardToPlay.color && c.value == cardToPlay.value);
 
             if (matchingCard != null)
