@@ -78,6 +78,13 @@ namespace UNO.Logic
             ApplyEffect(playedCard, chosenColor, affected);
             AdvanceTurn();
         }
+        public void NextPlayer()
+        {
+            if (CurrentPlayerIndex == 0)
+                CurrentPlayerIndex = 1;
+            else CurrentPlayerIndex = 0;
+            currentPlayer = Players[CurrentPlayerIndex];
+        }
         public void UpdateColor(Colors ChosenColor)
         {
             TopCard.color = ChosenColor;
