@@ -85,17 +85,10 @@ namespace UNO.Logic
 
   
 
-        public bool IsCardValid(Card TopCard, Card CardToPlay) { 
-        if (CardToPlay.value == Val.WildDrawFour || CardToPlay.value==Val.Wild)
-            
-               
-                return true;
-            
-
-            
-            if (TopCard.color == CardToPlay.color || TopCard.value == CardToPlay.value)
-                return true;
-            return false;
+        public bool IsCardValid(Card TopCard, Card CardToPlay) {
+            if (TopCard.value == Val.Wild || TopCard.value == Val.WildDrawFour)
+                return CardToPlay.color == TopCard.color;
+            return CardToPlay.color == TopCard.color || CardToPlay.value == TopCard.value;
             }
         public void PlayCard(Card TopCard,Card card)
         {

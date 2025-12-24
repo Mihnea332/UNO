@@ -15,6 +15,8 @@ namespace UNO.Logic
           private Card TopCard;
         private int CurrentPlayerIndex;
         private Player currentPlayer;
+        public bool hasDrawnThisTurn = false;
+        public Card drawnThisTurn = null;
         public Deck getdeck()
         {
             return deck;
@@ -64,19 +66,14 @@ namespace UNO.Logic
             TopCard = deck.GetTopCard();
             currentPlayer = Players[0];
         }
-        public void AdvanceTurn()
-        {
-            CurrentPlayerIndex++;
-            if (CurrentPlayerIndex >= Players.Count)
-                CurrentPlayerIndex = 0;
-            currentPlayer = Players[CurrentPlayerIndex];
-        }
+      
         public void AfterPlayerPlays(Card playedCard,Colors chosenColor)
         {
-            setTopCard(playedCard);
+            deck.deck_played.Add(playedCard); 
             Player affected = Players[(CurrentPlayerIndex + 1) % Players.Count];
             ApplyEffect(playedCard, chosenColor, affected);
-            AdvanceTurn();
+            
+            
         }
         public void NextPlayer()
         {
@@ -94,10 +91,13 @@ namespace UNO.Logic
 
             switch (PlayedCard.value)
             {
-
+                case Val.Skip:
+                    NextPlayer();
+                    break;
                 case Val.DrawTwo:
                     deck.DrawCard(AffectedPlayer, TopCard);
-                    deck.DrawCard(AffectedPlayer, TopCard); 
+                    deck.DrawCard(AffectedPlayer, TopCard);
+                    NextPlayer();
                     break;
                 case Val.Wild:
                     UpdateColor(ChosenColor); 
@@ -106,6 +106,7 @@ namespace UNO.Logic
                     UpdateColor(ChosenColor); 
                     for (int i=0;i<4;i++)
                         deck.DrawCard(AffectedPlayer, TopCard);
+                    NextPlayer();
                     break;
             }
         }

@@ -11,8 +11,8 @@ namespace UNO.Logic
         public string Type { get; set; } = "STATE";
         public string TopColor { get; set; }
         public string TopValue { get; set; }
-        public List<string> HandColors { get; set; }
-        public List<string> HandValues { get; set; }
+        public List<string> handColors { get; set; }
+        public List<string> handValues { get; set; }
         public int OpponentCardCount { get; set; }
         public int CurrentPlayerIndex { get; set; }
 

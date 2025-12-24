@@ -26,6 +26,7 @@ namespace UNO
         public NetworkStream clientStream; 
         public StreamReader citire;
         public StreamWriter scriere;
+        private bool gameOver=false;
         public UNOServer()
         {
             InitializeComponent();
@@ -35,28 +36,79 @@ namespace UNO
             running = true;
             listenThread = new Thread(ListenLoop);
             listenThread.Start();
-            this.FormClosed += (s, e) => Application.Exit();
+            this.FormClosed += UNOServer_FormClosed;
 
 
 
         }
+        private void UNOServer_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            running = false;
+
+            try { clientSocket?.Shutdown(SocketShutdown.Both); } catch { }
+            try { clientSocket?.Close(); } catch { }
+            try { server?.Stop(); } catch { }
+            try { listenThread?.Join(200); } catch { }
+
+            Environment.Exit(0);
+        }
         private void ListenLoop()
         {
-            Socket socket = server.AcceptSocket();
-            clientSocket = socket;
-            clientStream = new NetworkStream(socket);
-            citire = new StreamReader(clientStream);
-            scriere = new StreamWriter(clientStream);
-            scriere.AutoFlush = true;
-
-            while (running)
+            if (gameOver) return;
+            try
+            {
+                Socket socket = server.AcceptSocket();
+                this.lblStatus.Text = "Connected";
+                this.lblStatus.ForeColor = Color.Green;
+                clientSocket = socket;
+                clientStream = new NetworkStream(socket);
+                citire = new StreamReader(clientStream);
+                scriere = new StreamWriter(clientStream);
+                scriere.AutoFlush = true;
+                UNOMessage idMsg = new UNOMessage();
+                idMsg.Type = "PLAYER_ID";
+                idMsg.PlayerId = 0;
+                string json = JsonConvert.SerializeObject(idMsg);
+                scriere.WriteLine(json);
+                SendGameStateToClient();
+                while (running)
                 {
-                    string line = citire.ReadLine();
-                    if (line == null) break;
-                    UNOMessage msg = JsonConvert.DeserializeObject<UNOMessage>(line);
+                    if (gameOver) break;
+                    string line = null;
+                   try
+                    {
+                        line = citire.ReadLine();
+                        
+
+                    }
+                    catch
+                    {
+                        break;
+                    }
+                    if (line==null)
+                    {
+                        break;
+                        this.lblStatus.Text = "Waiting for client...";
+                        this.lblStatus.ForeColor = Color.Gray;
+                    }
+                    UNOMessage msg = null;
+                    try
+                    {
+                        msg = JsonConvert.DeserializeObject<UNOMessage>(line);
+
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+                    if (msg == null || msg.Type == null)
+                        continue;
                     HandleClientMessage(msg);
                 }
-
+            }
+            catch (SocketException)
+            { }
+            catch (Exception) { }
             
         }
 
@@ -79,25 +131,31 @@ namespace UNO
             Card top = game.getTopCard();
             state.TopColor = top.color.ToString();
             state.TopValue = top.value.ToString();
-            Player current = game.getcurrentPlayer();
-            List<Card> hand = current.getHand();
-            state.HandColors = new List<string>();
-            state.HandValues = new List<string>();
+            Player me = game.getPlayers()[0];
+            List<Card> hand = me.getHand();
+            state.handColors = new List<string>();
+            state.handValues = new List<string>();
             for(int i=0;i<hand.Count;i++)
             {
-                state.HandColors.Add(hand[i].color.ToString());
-                state.HandValues.Add(hand[i].value.ToString());
+                state.handColors.Add(hand[i].color.ToString());
+                state.handValues.Add(hand[i].value.ToString());
             }
             int opponentIndex = 1 - game.getCurrentPlayerIndex();
             Player opponent = game.getPlayers()[opponentIndex];
             state.OpponentCardCount = opponent.getHand().Count;
             state.CurrentPlayerIndex = game.getCurrentPlayerIndex();
             string json = JsonConvert.SerializeObject(state);
-            byte[] data = Encoding.UTF8.GetBytes(json);
-            clientSocket.Send(data);
+            scriere.WriteLine(json);
         }
         private void HandlePlay(UNOMessage msg)
         {
+            if (gameOver) return;
+
+            if (msg.PlayerId != game.getCurrentPlayerIndex())
+            {
+                SendGameStateToClient();
+                return;
+            }
             Player player = game.getPlayers()[msg.PlayerId];
 
             Card card = null;
@@ -113,28 +171,56 @@ namespace UNO
                     break;
                 }
             }
-
+            if (game.drawnThisTurn != null && card!=game.drawnThisTurn)
+            {
+                if (card != game.drawnThisTurn)
+                {
+                    SendGameStateToClient();
+                    return;
+                }
+            }
             if (card == null)
+            {
+                SendGameStateToClient();
                 return;
+            }
+                
 
             if (!player.IsCardValid(game.getTopCard(), card))
                 return;
-
+            game.drawnThisTurn = null;
+            game.hasDrawnThisTurn = false;
+            Colors chosenColor=card.color;
+            if(card.value==Val.Wild || card.value==Val.WildDrawFour)
+            {
+                if (!Enum.TryParse(msg.ChosenColor, out chosenColor))
+                {
+                    SendGameStateToClient();
+                }
+                if(chosenColor!=Colors.Red && chosenColor!=Colors.Green && chosenColor!=Colors.Blue && chosenColor!=Colors.Yellow)
+                {
+                    SendGameStateToClient();
+                    return;
+                }
+            }
             player.PlayCard(game.getTopCard(), card);
-
-            Colors chosenColor;
-            if (!Enum.TryParse(msg.ChosenColor, out chosenColor))
-                return;
-
             game.AfterPlayerPlays(card, chosenColor);
+
+
+
             if (player.getHand().Count == 0)
             {
                 SendWinnerMessage(msg.PlayerId);
+                gameOver = true;
                 Stop();
                 return;
             }
-            game.NextPlayer();
+
             SendGameStateToClient();
+            game.NextPlayer();
+            
+
+           
         }
         private void SendCanPlayDrawnMessage(Card drawn)
         {
@@ -143,8 +229,7 @@ namespace UNO
             msg.Color = drawn.color.ToString();
             msg.Value = drawn.value.ToString();
             string json = JsonConvert.SerializeObject(msg);
-            byte[] data = Encoding.UTF8.GetBytes(json);
-            clientSocket.Send(data);
+            scriere.WriteLine(json);
         }
         private void SendWinnerMessage
             (int playerId)
@@ -153,48 +238,69 @@ namespace UNO
             msg.Type = "WINNER";
             msg.PlayerId = playerId;
             string json = JsonConvert.SerializeObject(msg);
-            byte[] data = Encoding.UTF8.GetBytes(json);
-            clientSocket.Send(data);
+            scriere.WriteLine(json);
         }
         private void HandleDraw(UNOMessage msg)
         {
-          
+            if (gameOver) return;
+            if (msg.PlayerId!=game.getCurrentPlayerIndex())
+            {
+                SendGameStateToClient();
+                return;
+            }
+            if(game.hasDrawnThisTurn)
+            {
+                SendGameStateToClient();
+                return;
+            }
+            game.hasDrawnThisTurn = true;
+            if (msg.PlayerId != game.getCurrentPlayerIndex())
+            {
+                SendGameStateToClient();
+                return;
+            }
             Player player = game.getPlayers()[msg.PlayerId];
             game.getdeck().DrawCard(player, game.getTopCard());
             List<Card> hand = player.getHand();
             Card drawnCard = hand[hand.Count - 1];
+            game.drawnThisTurn = drawnCard;
             if (player.IsCardValid(game.getTopCard(), drawnCard)) 
             {
                 SendCanPlayDrawnMessage(drawnCard);
                 return;
             }
+            game.hasDrawnThisTurn = false;
+            game.drawnThisTurn = null;
             game.NextPlayer();
             SendGameStateToClient();  
         }
         private void Stop()
         {
+            running = false;
             try
             {
-                if (clientSocket != null)
-                {
-                    clientSocket.Shutdown(SocketShutdown.Both);
-                    clientSocket.Close();
-                    clientSocket = null;
-                }
-                if (server != null)
-                {
-                    server.Stop();
-                    server = null;
-                }
-                if (listenThread != null)
-                {
-                    listenThread.Abort();
-                    listenThread = null;
-                }
+                clientSocket?.Shutdown(SocketShutdown.Both);
+            }
+            catch { }
+            try
+            {
+                clientSocket?.Close();
+            }
+            catch { }
+            try
+            {
+                server?.Stop();
+            }
+            catch { }
+            try
+            {
+                listenThread?.Join(200);
 
             }
-            catch { 
-            }
+            catch { }
+            listenThread = null;
+            clientSocket = null;
+            server = null;
         }
         private void PictureBox_Click(object sender, EventArgs e)
         {
@@ -390,6 +496,11 @@ namespace UNO
             game.setCurrentPlayerIndex((game.getCurrentPlayerIndex() + 2) % game.getPlayers().Count);
             game.setcurrentPlayer(game.getPlayers()[game.getCurrentPlayerIndex()]);
             game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

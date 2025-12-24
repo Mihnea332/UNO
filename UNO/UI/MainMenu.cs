@@ -29,6 +29,7 @@ namespace UNO
 
         private void button1_Click(object sender, EventArgs e)
         {
+            
             UNOServer f = new UNOServer();
             f.Show();
             this.Hide();

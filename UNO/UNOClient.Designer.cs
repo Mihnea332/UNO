@@ -28,20 +28,103 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.flowHand = new System.Windows.Forms.FlowLayoutPanel();
+            this.labelOpponent = new System.Windows.Forms.Label();
+            this.labelTurn = new System.Windows.Forms.Label();
+            this.panelTopCard = new System.Windows.Forms.Panel();
+            this.panelChooseColor = new System.Windows.Forms.Panel();
+            this.btnPlayDrawnCard = new System.Windows.Forms.Button();
+            this.btnDraw = new System.Windows.Forms.Button();
             this.SuspendLayout();
+            // 
+            // flowHand
+            // 
+            this.flowHand.Location = new System.Drawing.Point(196, 372);
+            this.flowHand.Name = "flowHand";
+            this.flowHand.Size = new System.Drawing.Size(580, 100);
+            this.flowHand.TabIndex = 1;
+            // 
+            // labelOpponent
+            // 
+            this.labelOpponent.AutoSize = true;
+            this.labelOpponent.Location = new System.Drawing.Point(333, 22);
+            this.labelOpponent.Name = "labelOpponent";
+            this.labelOpponent.Size = new System.Drawing.Size(44, 16);
+            this.labelOpponent.TabIndex = 2;
+            this.labelOpponent.Text = "label1";
+            this.labelOpponent.Click += new System.EventHandler(this.label1_Click);
+            // 
+            // labelTurn
+            // 
+            this.labelTurn.AutoSize = true;
+            this.labelTurn.Location = new System.Drawing.Point(704, 9);
+            this.labelTurn.Name = "labelTurn";
+            this.labelTurn.Size = new System.Drawing.Size(44, 16);
+            this.labelTurn.TabIndex = 3;
+            this.labelTurn.Text = "label1";
+            // 
+            // panelTopCard
+            // 
+            this.panelTopCard.Location = new System.Drawing.Point(336, 140);
+            this.panelTopCard.Name = "panelTopCard";
+            this.panelTopCard.Size = new System.Drawing.Size(200, 100);
+            this.panelTopCard.TabIndex = 4;
+            // 
+            // panelChooseColor
+            // 
+            this.panelChooseColor.Location = new System.Drawing.Point(308, 311);
+            this.panelChooseColor.Name = "panelChooseColor";
+            this.panelChooseColor.Size = new System.Drawing.Size(250, 55);
+            this.panelChooseColor.TabIndex = 0;
+            // 
+            // btnPlayDrawnCard
+            // 
+            this.btnPlayDrawnCard.Location = new System.Drawing.Point(184, 173);
+            this.btnPlayDrawnCard.Name = "btnPlayDrawnCard";
+            this.btnPlayDrawnCard.Size = new System.Drawing.Size(75, 67);
+            this.btnPlayDrawnCard.TabIndex = 5;
+            this.btnPlayDrawnCard.Text = "Play drawn card?";
+            this.btnPlayDrawnCard.UseVisualStyleBackColor = true;
+            this.btnPlayDrawnCard.Click += new System.EventHandler(this.btnPlayDrawnCard_Click);
+            // 
+            // btnDraw
+            // 
+            this.btnDraw.Location = new System.Drawing.Point(962, 32);
+            this.btnDraw.Name = "btnDraw";
+            this.btnDraw.Size = new System.Drawing.Size(75, 112);
+            this.btnDraw.TabIndex = 6;
+            this.btnDraw.Text = "button1";
+            this.btnDraw.UseVisualStyleBackColor = true;
+            this.btnDraw.Click += new System.EventHandler(this.button1_Click);
             // 
             // UNOClient
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1067, 554);
+            this.Controls.Add(this.btnDraw);
+            this.Controls.Add(this.btnPlayDrawnCard);
+            this.Controls.Add(this.panelChooseColor);
+            this.Controls.Add(this.panelTopCard);
+            this.Controls.Add(this.labelTurn);
+            this.Controls.Add(this.labelOpponent);
+            this.Controls.Add(this.flowHand);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "UNOClient";
             this.Text = "Form2";
             this.Load += new System.EventHandler(this.UNOClient_Load);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
+        private System.Windows.Forms.FlowLayoutPanel flowHand;
+        private System.Windows.Forms.Label labelOpponent;
+        private System.Windows.Forms.Label labelTurn;
+        private System.Windows.Forms.Panel panelTopCard;
+        private System.Windows.Forms.Panel panelChooseColor;
+        private System.Windows.Forms.Button btnPlayDrawnCard;
+        private System.Windows.Forms.Button btnDraw;
     }
 }
