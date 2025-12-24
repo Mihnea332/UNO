@@ -115,7 +115,11 @@ namespace UNO
         private void HandleClientMessage(UNOMessage msg)
         {
             switch (msg.Type)
-            { case "PLAY": HandlePlay(msg);
+            {
+                case "REQUESTE_STATE":
+                    SendGameStateToClient();
+                    return;
+                case "PLAY": HandlePlay(msg);
                     break;
                 case "DRAW": HandleDraw(msg);
                     break;
@@ -231,8 +235,7 @@ namespace UNO
             string json = JsonConvert.SerializeObject(msg);
             scriere.WriteLine(json);
         }
-        private void SendWinnerMessage
-            (int playerId)
+        private void SendWinnerMessage (int playerId)
         {
             UNOMessage msg = new UNOMessage();
             msg.Type = "WINNER";

@@ -244,17 +244,13 @@ namespace UNO
             if (msg.Type == "STATE")
             {
                 GameStateMessage state = JsonConvert.DeserializeObject<GameStateMessage>(json);
-                UpdateGameState(state);
+                HandleGameState(state);
                 return;
 
             }
             else if (msg.Type == "CAN_PLAY_DRAWN")
             {
-                drawnColor = msg.Color;
-                drawnValue = msg.Value;
-                canPlayDrawnCard = true;
-                btnPlayDrawnCard.Visible = true;
-                btnPlayDrawnCard.Enabled = true;
+                HandleCanPlayDrawn(msg);
             }
             else if (msg.Type == "WINNER")
             {
@@ -274,25 +270,29 @@ namespace UNO
         }
         private void ListenLoop()
         {
-            while (running)
+           while(running)
             {
-                string line = reader.ReadLine();
-                if (line == null) break;
-                UNOMessage msg = JsonConvert.DeserializeObject<UNOMessage>(line);
-                if(msg.Type=="STATE")
+                string line = null;
+                try
                 {
-                    GameStateMessage state = JsonConvert.DeserializeObject<GameStateMessage>(line);
-                    HandleGameState(state);
+                    line = reader.ReadLine();
                 }
-                else if(msg.Type=="CAN_PLAY_DRAWN")
+                catch
                 {
-                    HandleCanPlayDrawn(msg);
+                    break;
+
                 }
-                else if(msg.Type=="WINNER")
+                if (string.IsNullOrWhiteSpace(line)) continue;
+                try
                 {
-                    HandleWinner(msg.PlayerId);
+                    HandleServerMessage(line);
+                }
+                catch(Exception ex)
+                {
+                    continue;
                 }
             }
+            
         }
         private void Connect()
         {
@@ -305,6 +305,10 @@ namespace UNO
             running = true;
             listenThread = new Thread(ListenLoop);
             listenThread.Start();
+            UNOMessage msg = new UNOMessage();
+            msg.Type = "REQUEST_STATE";
+            string json = JsonConvert.SerializeObject(msg);
+            writer.WriteLine(json);
         }
 
         private void button1_Click(object sender, EventArgs e)
