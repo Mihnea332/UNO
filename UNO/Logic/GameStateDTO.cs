@@ -16,5 +16,7 @@ namespace UNO.Logic
         public string TopValue { get; set; }
         public int CurrentPlayerId { get; set; }
         public List<string> ClientHand { get; set; }
+        public List<int> OpponentHands { get; set; }
+        public int DeckCount { get; set; }
     }
 }

@@ -18,15 +18,15 @@ namespace UNO
 {
     public partial class UNOServer : Form
     {
-        private Game game; 
+        private Game game;
         public TcpListener server;
         private Socket clientSocket;
         public Thread listenThread;
         public bool running;
-        public NetworkStream clientStream; 
+        public NetworkStream clientStream;
         public StreamReader citire;
         public StreamWriter scriere;
-        private bool gameOver=false;
+        private bool gameOver = false;
         private string topColor;
         private string topValue;
         private List<string> handColors = new List<string>();
@@ -37,6 +37,7 @@ namespace UNO
         {
             InitializeComponent();
             game = new Game();
+            SyncGameStateWithUI();
             SendGameStateToLocalUI();
             server = new TcpListener(System.Net.IPAddress.Any, 3000);
             server.Start();
@@ -44,7 +45,7 @@ namespace UNO
             listenThread = new Thread(ListenLoop);
             listenThread.Start();
             this.FormClosed += UNOServer_FormClosed;
-            
+
 
 
         }
@@ -89,7 +90,7 @@ namespace UNO
             parent.Controls.Clear();
             int x = 10;
             int y = 10;
-            for(int i=0;i<handColors.Count;i++)
+            for (int i = 0; i < handColors.Count; i++)
             {
                 Colors c = (Colors)Enum.Parse(typeof(Colors), handColors[i]);
                 Val v = (Val)Enum.Parse(typeof(Val), handValues[i]);
@@ -102,10 +103,10 @@ namespace UNO
                 PictureBox pb = new PictureBox
                 {
                     Size = new Size(60, 90),
-                    SizeMode=PictureBoxSizeMode.StretchImage,
-                    BackColor=Color.Transparent,
-                    Location=new Point(x,y),
-                    Tag=i
+                    SizeMode = PictureBoxSizeMode.StretchImage,
+                    BackColor = Color.Transparent,
+                    Location = new Point(x, y),
+                    Tag = i
                 };
 
                 string path = card.GetCardName();
@@ -115,7 +116,7 @@ namespace UNO
                 parent.Controls.Add(pb);
                 x += 70;
 
-        }
+            }
         }
         private void UpdateUI()
         {
@@ -128,68 +129,78 @@ namespace UNO
             try
             {
                 Socket socket = server.AcceptSocket();
-                this.lblStatus.Text = "Connected";
-                this.lblStatus.ForeColor = Color.Green;
+                this.Invoke(new Action(() =>
+                {
+                    this.lblStatus.Text = "Connected";
+                    this.lblStatus.ForeColor = Color.Green;
+                }));
                 clientSocket = socket;
                 clientStream = new NetworkStream(socket);
                 citire = new StreamReader(clientStream);
                 scriere = new StreamWriter(clientStream);
                 scriere.AutoFlush = true;
-                UNOMessage idMsg = new UNOMessage();
-                idMsg.Type = "PLAYER_ID";
-                idMsg.PlayerId = 1;
-                string json = JsonConvert.SerializeObject(idMsg);
-                scriere.WriteLine(json);
-                SendGameStateToClient();
+
                 while (running)
                 {
-                    if (gameOver) break;
-                    string line = null;
-                   try
-                    {
-                        line = citire.ReadLine();
-                        
 
-                    }
-                    catch
-                    {
-                        break;
-                    }
-                    if (line==null)
-                    {
-                        break;
-                        this.lblStatus.Text = "Waiting for client...";
-                        this.lblStatus.ForeColor = Color.Gray;
-                    }
-                    UNOMessage msg = null;
+                    string line = null;
                     try
                     {
-                        msg = JsonConvert.DeserializeObject<UNOMessage>(line);
+                        line = citire.ReadLine();
 
+
+
+
+
+
+                        if (line == null)
+                        {
+                            this.Invoke(new Action(() =>
+                            {
+                                this.lblStatus.Text = "Waiting for client...";
+                                this.lblStatus.ForeColor = Color.Gray;
+                            }));
+                            break;
+                        }
+
+
+                        UNOMessage msg = JsonConvert.DeserializeObject<UNOMessage>(line);
+
+
+
+                        if (msg != null)
+                        {
+                            this.Invoke(new Action(() => HandleClientMessage(msg)));
+                        }
                     }
-                    catch
-                    {
-                        continue;
-                    }
-                    if (msg == null || msg.Type == null)
-                        continue;
-                    HandleClientMessage(msg);
+                    catch { break; }
                 }
             }
             catch (SocketException)
-            { }
-            catch (Exception) { }
+            { 
+            }
+            catch(Exception ex)
+            {
+
+            }
             
         }
-        private void HandleGameState(GameStateMessage state)
+        private void HandleGameState(GameStateDto state)
         {
+            if (string.IsNullOrWhiteSpace(state.TopColor)||string.IsNullOrWhiteSpace(state.TopValue))
+            {
+                MessageBox.Show("Starea jocului primită este incompletă!", "Eroare", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             topColor = state.TopColor;
             topValue = state.TopValue;
-            handColors = state.handColors;
-            handValues = state.handValues;
-            currentPlayerIndex = state.CurrentPlayerIndex;
-            opponentCardCount = state.OpponentCardCount;
-            UpdateUI();
+            handColors.Clear();
+            handValues.Clear();
+            foreach (string color in state.ClientHand) handColors.Add(color);
+            foreach (string value in state.ClientHand) handValues.Add(value);
+            currentPlayerIndex = state.CurrentPlayerId;
+            opponentCardCount = state.OpponentHands != null && state.OpponentHands.Count > 0 ? state.OpponentHands[0] : 0;
+            SyncGameStateWithUI();
         }
         private GameStateMessage BuildStateForPlayer(int playerId)
         {
@@ -215,69 +226,18 @@ namespace UNO
         }
         private void SendGameStateToLocalUI()
         {
-           if(this.InvokeRequired)
-            {
-                this.Invoke(new Action(SendGameStateToLocalUI));
-                return;
-            }
-            bool isMyTurn = (game.getCurrentPlayerIndex() == 0);
-             if(isMyTurn)
-            {
-                this.Text = "Your Turn";
-                panelHandControl.Enabled = true;
-                button1.Enabled = true;
-            }
-             else
-            {
-                this.Text = "Waiting on opponent";
-                panelHandControl.Enabled = false;
-                button1.Enabled = false;
-            }
-            panelTopCardControl.Controls.Clear();
-            Card topcard = game.getTopCard();
-            if(topcard!=null)
-            {
-                PictureBox pbTop = new PictureBox
-                {
-                    Size = new Size(80, 120),
-                    SizeMode = PictureBoxSizeMode.StretchImage,
-                    Location = new Point(10, 10),
-                    BackColor = Color.Transparent
-                };
-                string topPath = topcard.GetCardName();
-                if (File.Exists(topPath))
-                    pbTop.Image = Image.FromFile(topPath);
-                else
-                    pbTop.BackColor = Color.Gray;
-                panelTopCardControl.Controls.Add(pbTop);
-                panelHandControl.Controls.Clear();
-                List<Card> myHand = game.getPlayers()[0].getHand();
-                int x = 10;
-                int y = 10;
-                int spacing = 70;
-                for(int i=0;i<myHand.Count;i++)
-                {
-                    Card c = myHand[i];
-                    PictureBox pb = new PictureBox
-                    {
-                        Size = new Size(60, 90),
-                        SizeMode = PictureBoxSizeMode.StretchImage,
-                        Location = new Point(x, y),
-                        Tag = i,
-                        Cursor = Cursors.Hand,
-                        BackColor = Color.Transparent
-                    };
-                    string path = c.GetCardName();
-                    if (File.Exists(path))
-                        pb.Image = Image.FromFile(path);
-                    else
-                        pb.BackColor = Color.White;
-                    pb.Click += Card_Click;
-                    panelHandControl.Controls.Add(pb);
-                    x += spacing;
-                    
-                }
-            }
+            GameStateDto gameState = new GameStateDto();
+            gameState.TopColor = game.getTopCard()?.color.ToString();
+            gameState.TopValue = game.getTopCard()?.value.ToString();
+            gameState.CurrentPlayerId = game.getCurrentPlayerIndex();
+            gameState.ClientHand = new List<string>();
+            gameState.OpponentHands = new List<int>();
+            gameState.DeckCount = game.getdeck().deck.Count;
+            foreach (Card card in game.getPlayers()[0].getHand())
+                gameState.ClientHand.Add($"{card.color} {card.value}");
+            for (int i = 1; i < game.getPlayers().Count; i++)
+                gameState.OpponentHands.Add(game.getPlayers()[i].getHand().Count);
+            HandleGameState(gameState);
         }
         private void HandleClientMessage(UNOMessage msg)
         {
@@ -390,6 +350,7 @@ namespace UNO
             game.hasDrawnThisTurn = false;
             player.PlayCard(game.getTopCard(), card);
             game.AfterPlayerPlays(card, chosenColor);
+            SyncGameStateWithUI();
 
 
 
@@ -401,6 +362,7 @@ namespace UNO
                 return;
             }
             game.NextPlayer();
+            SyncGameStateWithUI();
             SendGameStateToLocalUI();
             SendGameStateToClient();
             
@@ -446,6 +408,7 @@ namespace UNO
             }
             Player player = game.getPlayers()[msg.PlayerId];
             game.getdeck().DrawCard(player, game.getTopCard());
+            SyncGameStateWithUI();
             List<Card> hand = player.getHand();
             Card drawnCard = hand[hand.Count - 1];
             game.drawnThisTurn = drawnCard;
@@ -487,6 +450,27 @@ namespace UNO
             listenThread = null;
             clientSocket = null;
             server = null;
+        }
+        private void SyncGameStateWithUI()
+        {
+            Card topCard = game.getTopCard();
+            if (topCard != null)
+            {
+                topColor = topCard.color.ToString();
+                topValue = topCard.value.ToString();
+            }
+            handColors.Clear();
+            handValues.Clear();
+            List<Card> currentHand = game.getPlayers()[game.getCurrentPlayerIndex()].getHand();
+            for(int i=0;i<currentHand.Count;i++)
+            {
+                Card card = currentHand[i];
+                handColors.Add(card.value.ToString());
+                handValues.Add(card.color.ToString());
+                currentPlayerIndex = game.getCurrentPlayerIndex();
+                opponentCardCount = game.getPlayers()[(currentPlayerIndex + 1) % game.getPlayers().Count].getHand().Count;
+            
+        }
         }
         private void Card_Click(object sender, EventArgs e)
         {
