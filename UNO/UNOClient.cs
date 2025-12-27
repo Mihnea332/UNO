@@ -44,7 +44,18 @@ namespace UNO
 
         private void UNOClient_Load(object sender, EventArgs e)
         {
-            Connect();
+            System.Threading.Tasks.Task.Run(() => Connect());
+        }
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            running = false;
+            try
+            {
+                tcp?.Close();
+            }
+            catch { }
+            base.OnFormClosing(e);
+            Application.Exit();
         }
         private void ShowTopCard(Control parent)
         {
@@ -82,6 +93,8 @@ namespace UNO
         private void ShowHand(Control parent)
         {
             parent.Controls.Clear();
+            int x = 10;
+            int y = 10;
             for (int i = 0; i < handColors.Count; i++)
             {
                 Colors c = (Colors)Enum.Parse(typeof(Colors), handColors[i]);
@@ -99,6 +112,7 @@ namespace UNO
                     Size = new Size(60, 90),
                     SizeMode = PictureBoxSizeMode.StretchImage,
                     BackColor = Color.Transparent,
+                    Location=new Point(x,y),
                     Tag = i
                 };
                 string path = card.GetCardName();
@@ -108,63 +122,48 @@ namespace UNO
                     pb.BackColor = Color.Gray;
                 pb.Click += Card_Click;
                 parent.Controls.Add(pb);
-
+                x += 70;
             }
         }
         private void Card_Click(object sender, EventArgs e)
         {
-            if (currentPlayerIndex != myPlayerId)
-                return;
+            if (currentPlayerIndex != myPlayerId) return;
 
             PictureBox pb = sender as PictureBox;
             int index = (int)pb.Tag;
             string color = handColors[index];
             string value = handValues[index];
+
             if (value == "Wild" || value == "WildDrawFour")
             {
-                flowHand.Enabled = false;
-                panelChooseColor.Controls.Clear();
-                panelChooseColor.Visible = true;
-                int height = 40;
-                int width = 40;
-                int x = 0;
-                int y = 0;
-                int spacing = 50;
-                void AddColorButton(string colorName, Color uiColor)
+               
+                ShowColorPicker((selectedColor) =>
                 {
-                    Button btn = new Button()
-                    {
-                        Size = new Size(width, height),
-                        Location = new Point(x, y),
-                        BackColor = uiColor,
-                        Text = colorName,
-
-                        ForeColor = uiColor
-                    };
-                    btn.Click += (s, ev) =>
-                    {
-                        SendPlay(color, value, colorName);
-                        panelChooseColor.Visible = false;
-                        flowHand.Enabled = true;
-                    };
-                    panelChooseColor.Controls.Add(btn);
-                    x += spacing;
-                }
-                AddColorButton("Red", Color.Red);
-                AddColorButton("Blue", Color.Blue);
-                AddColorButton("Yellow", Color.Yellow);
-                AddColorButton("Green", Color.Green);
-
+                    SendPlay(color, value, selectedColor);
+                });
             }
             else
+            {
                 SendPlay(color, value);
+            }
         }
-    
+        private void btnPass_Click(object sender, EventArgs e)
+        {
+            if (!canPlayDrawnCard) return;
+            UNOMessage msg = new UNOMessage();
+            msg.Type = "PASS";
+            msg.PlayerId = myPlayerId;
+            string json = JsonConvert.SerializeObject(msg);
+            writer.WriteLine(json);
+            btnPlayDrawnCard.Visible = false;
+            canPlayDrawnCard = false;
+        }
+
         private void SendPlay(string color, string value)
         {
             SendPlay(color, value, null);
         }
-        private void SendPlay(string color,  string value, string chosenColor)
+        private void SendPlay(string color,  string value, string chosenColor=null)
         {
             UNOMessage msg = new UNOMessage();
             msg.Type = "PLAY";
@@ -198,14 +197,50 @@ namespace UNO
             if(currentPlayerIndex==myPlayerId)
             {
                 flowHand.Enabled = true;
-                btnDraw.Enabled = true;
+                btnDraw.Enabled = !canPlayDrawnCard;
 
             }
             else
             {
                 flowHand.Enabled = false;
                 btnPlayDrawnCard.Enabled = false;
+                btnPlayDrawnCard.Enabled = false;
+                panelChooseColor.Visible = false;
             }
+        }
+        private void ShowColorPicker(Action<string> onColorSelected)
+        {
+            flowHand.Enabled = false;
+            btnPlayDrawnCard.Enabled = false;
+            btnDraw.Enabled = false;
+            panelChooseColor.Controls.Clear();
+            panelChooseColor.Visible = true;
+            int width = 40;
+            int height = 40;
+            int x = 0;
+            int y = 50;
+            int spacing = 50;
+            string[] colors = { "Red", "Blue", "Yellow", "Green" };
+            Color[] uiColors = { Color.Red, Color.Blue, Color.Yellow, Color.Green };
+            for(int i=0;i<colors.Length;i++)
+            {
+                string colorName = colors[i];
+                Button btn = new Button
+                {
+                    Size = new Size(width, height),
+                    Location = new Point(x, y),
+                    BackColor = uiColors[i],
+                    Text = colorName,
+                    ForeColor=Color.White
+                };
+                btn.Click += (s, ev) =>
+                {
+                    panelChooseColor.Visible = false;
+                    flowHand.Enabled = true;
+                };
+                panelChooseColor.Controls.Add(btn);
+                x += spacing;
+            }    
         }
         private void HandleGameState(GameStateMessage state)
         {
@@ -215,6 +250,8 @@ namespace UNO
             handValues = state.handValues;
             opponentCardCount = state.OpponentCardCount;
             currentPlayerIndex = state.CurrentPlayerIndex;
+            canPlayDrawnCard = false;
+            btnPlayDrawnCard.Visible = false;
             UpdateUI();
         }
         private void HandleCanPlayDrawn(UNOMessage msg)
@@ -222,15 +259,19 @@ namespace UNO
             canPlayDrawnCard = true;
             drawnColor = msg.Color;
             drawnValue = msg.Value;
+            btnPlayDrawnCard.Visible = true;
+            btnPlayDrawnCard.Enabled = true;
+
 
         }
+
         private void HandleWinner(int playerId)
         {
             if (playerId == myPlayerId)
                 MessageBox.Show("You won!");
             else
                 MessageBox.Show("You lost!");
-            running = false;
+           
         }
         private void HandleServerMessage(string json)
         {
@@ -287,9 +328,9 @@ namespace UNO
                 {
                     HandleServerMessage(line);
                 }
-                catch(Exception ex)
+                catch(Exception)
                 {
-                    continue;
+                    
                 }
             }
             
@@ -330,51 +371,36 @@ namespace UNO
 
         private void btnPlayDrawnCard_Click(object sender, EventArgs e)
         {
-            if (!canPlayDrawnCard)
-                return;
-            if(drawnValue=="Wild"||drawnValue=="WildDrawFour")
+            if (!canPlayDrawnCard) return;
+
+            if (drawnValue == "Wild" || drawnValue == "WildDrawFour")
             {
-
-                flowHand.Enabled = false;
-                panelChooseColor.Controls.Clear();
-                panelChooseColor.Visible = true;
-                int height = 40;
-                int width = 40;
-                int x = 0;
-                int y = 0;
-                int spacing = 50;
-                void AddColorButton(string colorName, Color uiColor)
+                
+                ShowColorPicker((selectedColor) =>
                 {
-                    Button btn = new Button()
-                    {
-                        Size = new Size(width, height),
-                        Location = new Point(x, y),
-                        BackColor = uiColor,
-                        Text = colorName,
+                    
+                    SendPlay(drawnColor, drawnValue, selectedColor);
 
-                        ForeColor = uiColor
-                    };
-                    btn.Click += (s, ev) =>
-                    {
-                        SendPlay(drawnValue, drawnValue, colorName);
-                        panelChooseColor.Visible = false;
-                        flowHand.Enabled = true;
-                    };
-                    panelChooseColor.Controls.Add(btn);
-                    x += spacing;
-                }
-                AddColorButton("Red", Color.Red);
-                AddColorButton("Blue", Color.Blue);
-                AddColorButton("Yellow", Color.Yellow);
-                AddColorButton("Green", Color.Green);
+                   
+                    btnPlayDrawnCard.Visible = false;
+                    canPlayDrawnCard = false;
+                   
+                });
             }
             else
             {
+                
                 SendPlay(drawnColor, drawnValue, null);
+
+               
+                btnPlayDrawnCard.Visible = false;
+                canPlayDrawnCard = false;
             }
-            btnPlayDrawnCard.Visible = false;
-            btnPlayDrawnCard.Enabled = false;
-            canPlayDrawnCard = false;
+        }
+
+        private void btnPass_Click_1(object sender, EventArgs e)
+        {
+
         }
     }
 }

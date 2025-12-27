@@ -27,17 +27,24 @@ namespace UNO
         public StreamReader citire;
         public StreamWriter scriere;
         private bool gameOver=false;
+        private string topColor;
+        private string topValue;
+        private List<string> handColors = new List<string>();
+        private List<string> handValues = new List<string>();
+        private int currentPlayerIndex;
+        private int opponentCardCount;
         public UNOServer()
         {
             InitializeComponent();
             game = new Game();
+            SendGameStateToLocalUI();
             server = new TcpListener(System.Net.IPAddress.Any, 3000);
             server.Start();
             running = true;
             listenThread = new Thread(ListenLoop);
             listenThread.Start();
             this.FormClosed += UNOServer_FormClosed;
-
+            
 
 
         }
@@ -51,6 +58,69 @@ namespace UNO
             try { listenThread?.Join(200); } catch { }
 
             Environment.Exit(0);
+        }
+        private void ShowTopCard(Control parent)
+        {
+            parent.Controls.Clear();
+            if (string.IsNullOrWhiteSpace(topColor) || string.IsNullOrWhiteSpace(topValue))
+                return;
+            PictureBox pb = new PictureBox
+            {
+                Size = new Size(80, 120),
+                Location = new Point(10, 10),
+                SizeMode = PictureBoxSizeMode.StretchImage
+            };
+            Colors c = (Colors)Enum.Parse(typeof(Colors), topColor);
+            Val v = (Val)Enum.Parse(typeof(Val), topValue);
+            Card card;
+            if (v == Val.Wild || v == Val.WildDrawFour)
+                card = new WildCard(c, v);
+            else if (v == Val.DrawTwo || v == Val.Skip)
+                card = new SpecialCard(c, v);
+            else card = new NormalCard(c, v);
+            string path = card.GetCardName();
+            if (File.Exists(path))
+                pb.Image = Image.FromFile((path));
+            else pb.BackColor = Color.Gray;
+            parent.Controls.Add(pb);
+        }
+        private void ShowHand(Control parent)
+        {
+            parent.Controls.Clear();
+            int x = 10;
+            int y = 10;
+            for(int i=0;i<handColors.Count;i++)
+            {
+                Colors c = (Colors)Enum.Parse(typeof(Colors), handColors[i]);
+                Val v = (Val)Enum.Parse(typeof(Val), handValues[i]);
+                Card card;
+                if (v == Val.Wild || v == Val.WildDrawFour)
+                    card = new WildCard(c, v);
+                else if (v == Val.DrawTwo || v == Val.Skip)
+                    card = new SpecialCard(c, v);
+                else card = new NormalCard(c, v);
+                PictureBox pb = new PictureBox
+                {
+                    Size = new Size(60, 90),
+                    SizeMode=PictureBoxSizeMode.StretchImage,
+                    BackColor=Color.Transparent,
+                    Location=new Point(x,y),
+                    Tag=i
+                };
+
+                string path = card.GetCardName();
+                if (File.Exists(path))
+                    pb.Image = Image.FromFile((path));
+                pb.Click += Card_Click;
+                parent.Controls.Add(pb);
+                x += 70;
+
+        }
+        }
+        private void UpdateUI()
+        {
+            ShowTopCard(panelTopCardControl);
+            ShowHand(panelHandControl);
         }
         private void ListenLoop()
         {
@@ -67,7 +137,7 @@ namespace UNO
                 scriere.AutoFlush = true;
                 UNOMessage idMsg = new UNOMessage();
                 idMsg.Type = "PLAYER_ID";
-                idMsg.PlayerId = 0;
+                idMsg.PlayerId = 1;
                 string json = JsonConvert.SerializeObject(idMsg);
                 scriere.WriteLine(json);
                 SendGameStateToClient();
@@ -111,43 +181,149 @@ namespace UNO
             catch (Exception) { }
             
         }
-
+        private void HandleGameState(GameStateMessage state)
+        {
+            topColor = state.TopColor;
+            topValue = state.TopValue;
+            handColors = state.handColors;
+            handValues = state.handValues;
+            currentPlayerIndex = state.CurrentPlayerIndex;
+            opponentCardCount = state.OpponentCardCount;
+            UpdateUI();
+        }
+        private GameStateMessage BuildStateForPlayer(int playerId)
+        {
+            GameStateMessage state = new GameStateMessage();
+            state.Type = "STATE";
+            Card top = game.getTopCard();
+            state.TopColor = top.color.ToString();
+            state.TopValue=top.value.ToString();
+            Player me = game.getPlayers()[playerId];
+            List<Card> hand = me.getHand();
+            state.handColors = new List<string>();
+            state.handValues = new List<string>();
+            foreach(Card card in hand)
+            {
+                state.handColors.Add(card.color.ToString());
+                state.handValues.Add(card.value.ToString());
+            }
+            int opponentIndex = 1 - playerId;
+            Player opponent = game.getPlayers()[opponentIndex];
+            state.OpponentCardCount = opponent.getHand().Count;
+            state.CurrentPlayerIndex = game.getCurrentPlayerIndex();
+            return state;
+        }
+        private void SendGameStateToLocalUI()
+        {
+           if(this.InvokeRequired)
+            {
+                this.Invoke(new Action(SendGameStateToLocalUI));
+                return;
+            }
+            bool isMyTurn = (game.getCurrentPlayerIndex() == 0);
+             if(isMyTurn)
+            {
+                this.Text = "Your Turn";
+                panelHandControl.Enabled = true;
+                button1.Enabled = true;
+            }
+             else
+            {
+                this.Text = "Waiting on opponent";
+                panelHandControl.Enabled = false;
+                button1.Enabled = false;
+            }
+            panelTopCardControl.Controls.Clear();
+            Card topcard = game.getTopCard();
+            if(topcard!=null)
+            {
+                PictureBox pbTop = new PictureBox
+                {
+                    Size = new Size(80, 120),
+                    SizeMode = PictureBoxSizeMode.StretchImage,
+                    Location = new Point(10, 10),
+                    BackColor = Color.Transparent
+                };
+                string topPath = topcard.GetCardName();
+                if (File.Exists(topPath))
+                    pbTop.Image = Image.FromFile(topPath);
+                else
+                    pbTop.BackColor = Color.Gray;
+                panelTopCardControl.Controls.Add(pbTop);
+                panelHandControl.Controls.Clear();
+                List<Card> myHand = game.getPlayers()[0].getHand();
+                int x = 10;
+                int y = 10;
+                int spacing = 70;
+                for(int i=0;i<myHand.Count;i++)
+                {
+                    Card c = myHand[i];
+                    PictureBox pb = new PictureBox
+                    {
+                        Size = new Size(60, 90),
+                        SizeMode = PictureBoxSizeMode.StretchImage,
+                        Location = new Point(x, y),
+                        Tag = i,
+                        Cursor = Cursors.Hand,
+                        BackColor = Color.Transparent
+                    };
+                    string path = c.GetCardName();
+                    if (File.Exists(path))
+                        pb.Image = Image.FromFile(path);
+                    else
+                        pb.BackColor = Color.White;
+                    pb.Click += Card_Click;
+                    panelHandControl.Controls.Add(pb);
+                    x += spacing;
+                    
+                }
+            }
+        }
         private void HandleClientMessage(UNOMessage msg)
         {
+            if(this.InvokeRequired)
+            {
+                this.Invoke(new Action<UNOMessage>(HandleClientMessage), msg);
+                return;
+            }
             switch (msg.Type)
             {
-                case "REQUESTE_STATE":
+                case "REQUEST_STATE":
                     SendGameStateToClient();
                     return;
                 case "PLAY": HandlePlay(msg);
                     break;
                 case "DRAW": HandleDraw(msg);
                     break;
+                case"PASS":
+                        HandlePass(msg);
+                    break;
                 default:
                     break;
+            }
+        }
+        private void HandlePass(UNOMessage msg)
+        {
+            if (gameOver) return;
+            if(msg.PlayerId!=game.getCurrentPlayerIndex())
+            {
+                SendGameStateToClient();
+                return;
+            }
+            if(game.hasDrawnThisTurn)
+            {
+                game.hasDrawnThisTurn = false;
+                game.drawnThisTurn = null;
+                game.NextPlayer();
+                SendGameStateToLocalUI();
+                SendGameStateToClient();
             }
         }
         public void SendGameStateToClient()
         {
             if (clientSocket == null)
                 return;
-            GameStateMessage state = new GameStateMessage();
-            Card top = game.getTopCard();
-            state.TopColor = top.color.ToString();
-            state.TopValue = top.value.ToString();
-            Player me = game.getPlayers()[0];
-            List<Card> hand = me.getHand();
-            state.handColors = new List<string>();
-            state.handValues = new List<string>();
-            for(int i=0;i<hand.Count;i++)
-            {
-                state.handColors.Add(hand[i].color.ToString());
-                state.handValues.Add(hand[i].value.ToString());
-            }
-            int opponentIndex = 1 - game.getCurrentPlayerIndex();
-            Player opponent = game.getPlayers()[opponentIndex];
-            state.OpponentCardCount = opponent.getHand().Count;
-            state.CurrentPlayerIndex = game.getCurrentPlayerIndex();
+            GameStateMessage state = BuildStateForPlayer(1);
             string json = JsonConvert.SerializeObject(state);
             scriere.WriteLine(json);
         }
@@ -186,14 +362,17 @@ namespace UNO
             if (card == null)
             {
                 SendGameStateToClient();
+                
                 return;
             }
-                
+
 
             if (!player.IsCardValid(game.getTopCard(), card))
+            {
+                SendGameStateToClient();
                 return;
-            game.drawnThisTurn = null;
-            game.hasDrawnThisTurn = false;
+            }
+            
             Colors chosenColor=card.color;
             if(card.value==Val.Wild || card.value==Val.WildDrawFour)
             {
@@ -207,6 +386,8 @@ namespace UNO
                     return;
                 }
             }
+            game.drawnThisTurn = null;
+            game.hasDrawnThisTurn = false;
             player.PlayCard(game.getTopCard(), card);
             game.AfterPlayerPlays(card, chosenColor);
 
@@ -216,12 +397,13 @@ namespace UNO
             {
                 SendWinnerMessage(msg.PlayerId);
                 gameOver = true;
-                Stop();
+                MessageBox.Show("Player " + msg.PlayerId + " won!");
                 return;
             }
-
-            SendGameStateToClient();
             game.NextPlayer();
+            SendGameStateToLocalUI();
+            SendGameStateToClient();
+            
             
 
            
@@ -275,7 +457,8 @@ namespace UNO
             game.hasDrawnThisTurn = false;
             game.drawnThisTurn = null;
             game.NextPlayer();
-            SendGameStateToClient();  
+            SendGameStateToClient();
+            SendGameStateToLocalUI();
         }
         private void Stop()
         {
@@ -305,172 +488,214 @@ namespace UNO
             clientSocket = null;
             server = null;
         }
+        private void Card_Click(object sender, EventArgs e)
+        {
+            if (game.getCurrentPlayerIndex() != 0)
+
+            {
+                MessageBox.Show("Nu e tura ta");
+                return;
+            }
+            PictureBox pb = sender as PictureBox;
+            int index = (int)pb.Tag;
+            Player serverPlayer = game.getPlayers()[0];
+            
+            if (index < 0 || index >= handColors.Count) return;
+            Card card = serverPlayer.getHand()[index];
+            if (!serverPlayer.IsCardValid(game.getTopCard(),card))
+            {
+                MessageBox.Show("Această carte nu poate fi jucată acum!");
+                return;
+            }
+            string color = card.color.ToString();
+            string value = card.value.ToString();
+            string chosenColor = null;
+            if(value=="Wild" || value=="WildDrawFour")
+            {
+                ColorDialog cd = new ColorDialog();
+                if (cd.ShowDialog() == DialogResult.OK)
+                {
+                    if (cd.Color == Color.Red) chosenColor = "Red";
+                    else if (cd.Color == Color.Blue) chosenColor = "Blue";
+                    else if (cd.Color == Color.Yellow) chosenColor = "Yellow";
+                    else chosenColor = "Green";
+                }
+                else return;
+            }
+            UNOMessage msg = new UNOMessage();
+            msg.Type = "PLAY";
+            msg.PlayerId = 0;
+            msg.Color = color;
+            msg.Value = value;
+            msg.ChosenColor = chosenColor;
+            HandlePlay(msg);
+        }
         private void PictureBox_Click(object sender, EventArgs e)
         {
-            PictureBox clickedCard = sender as PictureBox;
-            if (clickedCard == null) return;
+            //PictureBox clickedCard = sender as PictureBox;
+            //if (clickedCard == null) return;
 
-            Card selectedCard = clickedCard.Tag as Card;
-            if (selectedCard == null) return;
+            //Card selectedCard = clickedCard.Tag as Card;
+            //if (selectedCard == null) return;
 
            
-            if (game.getTopCard() == null) return;
+            //if (game.getTopCard() == null) return;
 
-            if (game.getcurrentPlayer().IsCardValid(game.getTopCard(), selectedCard))
-            {
+            //if (game.getcurrentPlayer().IsCardValid(game.getTopCard(), selectedCard))
+            //{
                 
-                game.getcurrentPlayer().RemoveCard(selectedCard);
-                Colors color=game.getTopCard().color;
-                if(selectedCard.value==Val.Wild||selectedCard.value==Val.WildDrawFour)
-                {
-                    panelHandControl.Enabled = false;
-                    panel1.Controls.Clear();
+            //    game.getcurrentPlayer().RemoveCard(selectedCard);
+            //    Colors color=game.getTopCard().color;
+            //    if(selectedCard.value==Val.Wild||selectedCard.value==Val.WildDrawFour)
+            //    {
+            //        panelHandControl.Enabled = false;
+            //        panel1.Controls.Clear();
                    
-                    panel1.Visible = true;
-                    int height = 40;
-                    int width = 40;
-                    int x = 0;
-                    int y = 0;
-                    int spacing = 50;
+            //        panel1.Visible = true;
+            //        int height = 40;
+            //        int width = 40;
+            //        int x = 0;
+            //        int y = 0;
+            //        int spacing = 50;
                     
-                    Button Red = new Button()
-                    {
-                        Size = new Size(width, height),
-                        Location = new Point(x, y),
-                        BackColor = Color.Red,
-                        Text="Red",
-                        ForeColor = Color.Red
-                    };
+            //        Button Red = new Button()
+            //        {
+            //            Size = new Size(width, height),
+            //            Location = new Point(x, y),
+            //            BackColor = Color.Red,
+            //            Text="Red",
+            //            ForeColor = Color.Red
+            //        };
                     
-                    Red.Click += (s, ev) =>
-                    {
-                        Enum.TryParse(Red.Text, out Colors parsedColor);
-                        color = parsedColor;
-                        game.ApplyEffect(selectedCard, color, game.getPlayers()[(game.getCurrentPlayerIndex() + 1) % 2]);
-                        game.setTopCard(selectedCard);
-                        panel1.Visible = false;
-                        panelHandControl.Enabled = true;
-                    };
-                    x += spacing;
-                    panel1.Controls.Add(Red);
-                    Button Blue = new Button()
-                    {
-                        Size = new Size(width, height),
-                        Location = new Point(x, y),
-                        BackColor = Color.Blue,
-                        Text = "Blue",
-                        ForeColor = Color.Blue
-                    };
-                    Blue.Click += (s, ev) =>
-                    {
-                        Enum.TryParse(Blue.Text, out Colors parsedColor);
-                        color = parsedColor;
+            //        Red.Click += (s, ev) =>
+            //        {
+            //            Enum.TryParse(Red.Text, out Colors parsedColor);
+            //            color = parsedColor;
+            //            game.ApplyEffect(selectedCard, color, game.getPlayers()[(game.getCurrentPlayerIndex() + 1) % 2]);
+            //            game.setTopCard(selectedCard);
+            //            panel1.Visible = false;
+            //            panelHandControl.Enabled = true;
+            //        };
+            //        x += spacing;
+            //        panel1.Controls.Add(Red);
+            //        Button Blue = new Button()
+            //        {
+            //            Size = new Size(width, height),
+            //            Location = new Point(x, y),
+            //            BackColor = Color.Blue,
+            //            Text = "Blue",
+            //            ForeColor = Color.Blue
+            //        };
+            //        Blue.Click += (s, ev) =>
+            //        {
+            //            Enum.TryParse(Blue.Text, out Colors parsedColor);
+            //            color = parsedColor;
                         
-                        game.ApplyEffect(selectedCard, color, game.getPlayers()[(game.getCurrentPlayerIndex() + 1) % 2]);
-                        game.setTopCard(selectedCard);
-                        panel1.Visible = false;
-                        panelHandControl.Enabled = true;
-                    };
-                    x += spacing;
-                    panel1.Controls.Add(Blue);
-                    Button Yellow = new Button()
-                    {
-                        Size = new Size(width, height),
-                        Location = new Point(x, y),
-                        BackColor = Color.Yellow,
-                        Text = "Yellow",
-                        ForeColor = Color.Yellow
-                    };
-                    Yellow.Click += (s, ev) =>
-                    {
-                        Enum.TryParse(Yellow.Text, out Colors parsedColor);
-                        color = parsedColor;
+            //            game.ApplyEffect(selectedCard, color, game.getPlayers()[(game.getCurrentPlayerIndex() + 1) % 2]);
+            //            game.setTopCard(selectedCard);
+            //            panel1.Visible = false;
+            //            panelHandControl.Enabled = true;
+            //        };
+            //        x += spacing;
+            //        panel1.Controls.Add(Blue);
+            //        Button Yellow = new Button()
+            //        {
+            //            Size = new Size(width, height),
+            //            Location = new Point(x, y),
+            //            BackColor = Color.Yellow,
+            //            Text = "Yellow",
+            //            ForeColor = Color.Yellow
+            //        };
+            //        Yellow.Click += (s, ev) =>
+            //        {
+            //            Enum.TryParse(Yellow.Text, out Colors parsedColor);
+            //            color = parsedColor;
                         
-                        game.ApplyEffect(selectedCard, color, game.getPlayers()[(game.getCurrentPlayerIndex() + 1) % 2]);
-                        game.setTopCard(selectedCard);
-                        panel1.Visible = false;
-                        panelHandControl.Enabled = true;
-                    };
-                    x += spacing;
-                    panel1.Controls.Add(Yellow);
-                    Button Green = new Button()
-                    {
-                        Size = new Size(width, height),
-                        Location = new Point(x, y),
-                        BackColor = Color.Green,
-                        Text = "Green",
-                        ForeColor = Color.Green
-                    };
-                    Green.Click +=  (s, ev) =>
-                    {
-                        Enum.TryParse(Green.Text, out Colors parsedColor);
-                        color = parsedColor;
-                        game.ApplyEffect(selectedCard, color, game.getPlayers()[(game.getCurrentPlayerIndex() + 1) % 2]);
-                        game.setTopCard(selectedCard);
-                        panel1.Visible = false;
-                        panelHandControl.Enabled = true;
-                    };
-                    panel1.Controls.Add(Green);
+            //            game.ApplyEffect(selectedCard, color, game.getPlayers()[(game.getCurrentPlayerIndex() + 1) % 2]);
+            //            game.setTopCard(selectedCard);
+            //            panel1.Visible = false;
+            //            panelHandControl.Enabled = true;
+            //        };
+            //        x += spacing;
+            //        panel1.Controls.Add(Yellow);
+            //        Button Green = new Button()
+            //        {
+            //            Size = new Size(width, height),
+            //            Location = new Point(x, y),
+            //            BackColor = Color.Green,
+            //            Text = "Green",
+            //            ForeColor = Color.Green
+            //        };
+            //        Green.Click +=  (s, ev) =>
+            //        {
+            //            Enum.TryParse(Green.Text, out Colors parsedColor);
+            //            color = parsedColor;
+            //            game.ApplyEffect(selectedCard, color, game.getPlayers()[(game.getCurrentPlayerIndex() + 1) % 2]);
+            //            game.setTopCard(selectedCard);
+            //            panel1.Visible = false;
+            //            panelHandControl.Enabled = true;
+            //        };
+            //        panel1.Controls.Add(Green);
 
                     
-                    game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
-                }
+            //        game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
+            //    }
                 
-                if (selectedCard.value==Val.DrawTwo)
-                    game.ApplyEffect(selectedCard, color, game.getPlayers()[(game.getCurrentPlayerIndex() + 1) % 2]);
-                if (selectedCard.value == Val.Skip|| selectedCard.value==Val.DrawTwo)
-                {
+            //    if (selectedCard.value==Val.DrawTwo)
+            //        game.ApplyEffect(selectedCard, color, game.getPlayers()[(game.getCurrentPlayerIndex() + 1) % 2]);
+            //    if (selectedCard.value == Val.Skip|| selectedCard.value==Val.DrawTwo)
+            //    {
                     
-                    game.getcurrentPlayer().RemoveCard(selectedCard);
+            //        game.getcurrentPlayer().RemoveCard(selectedCard);
 
-                    game.setTopCard(selectedCard); 
-                    game.getdeck().deck_played.Add(selectedCard);
-                    game.ShowTopCard(panelTopCardControl);
+            //        game.setTopCard(selectedCard); 
+            //        game.getdeck().deck_played.Add(selectedCard);
+            //        game.ShowTopCard(panelTopCardControl);
 
 
-                    game.setCurrentPlayerIndex((game.getCurrentPlayerIndex() + 2) % game.getPlayers().Count);
-                    game.setcurrentPlayer(game.getPlayers()[game.getCurrentPlayerIndex()]);
+            //        game.setCurrentPlayerIndex((game.getCurrentPlayerIndex() + 2) % game.getPlayers().Count);
+            //        game.setcurrentPlayer(game.getPlayers()[game.getCurrentPlayerIndex()]);
 
                     
-                    game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
-                }
+            //        game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
+            //    }
 
-                game.setTopCard(selectedCard);
-                game.getdeck().deck_played.Add(selectedCard);
-                game.ShowTopCard(panelTopCardControl);
-                if (game.getcurrentPlayer().getHand().Count == 0)
-                {
-                    MessageBox.Show("Player" + game.getCurrentPlayerIndex() + " a castigat");
-                    Application.Exit(); 
-                }
-                if (selectedCard.value != Val.DrawTwo && selectedCard.value != Val.WildDrawFour && selectedCard.value != Val.Skip)
-                {
+            //    game.setTopCard(selectedCard);
+            //    game.getdeck().deck_played.Add(selectedCard);
+            //    game.ShowTopCard(panelTopCardControl);
+            //    if (game.getcurrentPlayer().getHand().Count == 0)
+            //    {
+            //        MessageBox.Show("Player" + game.getCurrentPlayerIndex() + " a castigat");
+            //        Application.Exit(); 
+            //    }
+            //    if (selectedCard.value != Val.DrawTwo && selectedCard.value != Val.WildDrawFour && selectedCard.value != Val.Skip)
+            //    {
 
-                    game.setCurrentPlayerIndex((game.getCurrentPlayerIndex() + 2) % game.getPlayers().Count);
-                    game.setCurrentPlayerIndex((game.getCurrentPlayerIndex() + 2) % game.getPlayers().Count);
+            //        game.setCurrentPlayerIndex((game.getCurrentPlayerIndex() + 2) % game.getPlayers().Count);
+            //        game.setCurrentPlayerIndex((game.getCurrentPlayerIndex() + 2) % game.getPlayers().Count);
 
 
-                    game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
+            //        game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
 
-                }
-            }
+            //    }
+            //}
             
 
         }
         private void Form1_Load(object sender, EventArgs e)
         {
-            Image original = Image.FromFile(@"..\..\Resources\Deck.png");
-            Image resize = new Bitmap(original, new Size(90, 190)); 
-            button1.Image = resize;
+            //Image original = Image.FromFile(@"..\..\Resources\Deck.png");
+            //Image resize = new Bitmap(original, new Size(90, 190)); 
+            //button1.Image = resize;
 
 
-            game.getcurrentPlayer().getHand().Add(new WildCard(Colors.None, Val.Wild));
-            game.getcurrentPlayer().getHand().Add(new WildCard(Colors.None, Val.WildDrawFour));
-            game.getcurrentPlayer().getHand().Add(new SpecialCard(Colors.Red, Val.Skip));
-            game.getcurrentPlayer().getHand().Add(new SpecialCard(Colors.Red, Val.Skip));
-            game.getdeck().deck_played.Add(game.getTopCard());
-            game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
-            game.ShowTopCard(panelTopCardControl);
+            //game.getcurrentPlayer().getHand().Add(new WildCard(Colors.None, Val.Wild));
+            //game.getcurrentPlayer().getHand().Add(new WildCard(Colors.None, Val.WildDrawFour));
+            //game.getcurrentPlayer().getHand().Add(new SpecialCard(Colors.Red, Val.Skip));
+            //game.getcurrentPlayer().getHand().Add(new SpecialCard(Colors.Red, Val.Skip));
+            //game.getdeck().deck_played.Add(game.getTopCard());
+            //game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
+            //game.ShowTopCard(panelTopCardControl);
 
         }
 
@@ -494,11 +719,11 @@ namespace UNO
         private void button1_Click(object sender, EventArgs e)
         {
             
-            Card topCard = game.getdeck().deck_played[game.getdeck().deck_played.Count - 1];
-            game.getdeck().DrawCard(game.getcurrentPlayer(), topCard);
-            game.setCurrentPlayerIndex((game.getCurrentPlayerIndex() + 2) % game.getPlayers().Count);
-            game.setcurrentPlayer(game.getPlayers()[game.getCurrentPlayerIndex()]);
-            game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
+            //Card topCard = game.getdeck().deck_played[game.getdeck().deck_played.Count - 1];
+            //game.getdeck().DrawCard(game.getcurrentPlayer(), topCard);
+            //game.setCurrentPlayerIndex((game.getCurrentPlayerIndex() + 2) % game.getPlayers().Count);
+            //game.setcurrentPlayer(game.getPlayers()[game.getCurrentPlayerIndex()]);
+            //game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
         }
 
         private void label1_Click(object sender, EventArgs e)

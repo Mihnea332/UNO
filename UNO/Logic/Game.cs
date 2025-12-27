@@ -69,7 +69,8 @@ namespace UNO.Logic
       
         public void AfterPlayerPlays(Card playedCard,Colors chosenColor)
         {
-            deck.deck_played.Add(playedCard); 
+            deck.deck_played.Add(playedCard);
+            setTopCard(playedCard);
             Player affected = Players[(CurrentPlayerIndex + 1) % Players.Count];
             ApplyEffect(playedCard, chosenColor, affected);
             

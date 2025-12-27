@@ -35,6 +35,8 @@
             this.panelChooseColor = new System.Windows.Forms.Panel();
             this.btnPlayDrawnCard = new System.Windows.Forms.Button();
             this.btnDraw = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.btnPass = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // flowHand
@@ -97,11 +99,32 @@
             this.btnDraw.UseVisualStyleBackColor = true;
             this.btnDraw.Click += new System.EventHandler(this.button1_Click);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(0, 0);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 7;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // btnPass
+            // 
+            this.btnPass.Location = new System.Drawing.Point(12, 65);
+            this.btnPass.Name = "btnPass";
+            this.btnPass.Size = new System.Drawing.Size(75, 23);
+            this.btnPass.TabIndex = 8;
+            this.btnPass.Text = "button2";
+            this.btnPass.UseVisualStyleBackColor = true;
+            this.btnPass.Click += new System.EventHandler(this.btnPass_Click_1);
+            // 
             // UNOClient
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1067, 554);
+            this.Controls.Add(this.btnPass);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.btnDraw);
             this.Controls.Add(this.btnPlayDrawnCard);
             this.Controls.Add(this.panelChooseColor);
@@ -126,5 +149,7 @@
         private System.Windows.Forms.Panel panelChooseColor;
         private System.Windows.Forms.Button btnPlayDrawnCard;
         private System.Windows.Forms.Button btnDraw;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnPass;
     }
 }
