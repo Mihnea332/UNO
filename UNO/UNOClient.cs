@@ -46,10 +46,15 @@ namespace UNO
                 string[] parts = text.Split('_');
                 Colors c = (Colors)Enum.Parse(typeof(Colors), parts[0]);
                 Val v = (Val)Enum.Parse(typeof(Val), parts[1]);
-                if (v == Val.Wild || v == Val.WildDrawFour) return new WildCard(c, v);
-                if (v == Val.Skip || v == Val.Reverse || v == Val.DrawTwo) return new SpecialCard(c, v);
-                return new NormalCard(c, v);
-              
+                Card createdCard;
+                if (v == Val.Wild || v == Val.WildDrawFour)
+                    createdCard = new WildCard(c, v);
+                else if (v == Val.Skip || v == Val.Reverse || v == Val.DrawTwo)
+                    createdCard = new SpecialCard(c, v);
+                else
+                    createdCard = new NormalCard(c, v);
+                createdCard.color = c;
+                return createdCard;
             }
             catch
             {
@@ -112,6 +117,16 @@ namespace UNO
                 Card c = StringToCard(parts[1]);
                 game.setTopCard(c);
                 game.ShowTopCard(panelTopCardControl);
+                if (c.value == Val.Wild || c.value == Val.WildDrawFour)
+                {
+                    System.Drawing.Color visualColor = System.Drawing.Color.FromName(c.color.ToString());
+                    panelTopCardControl.BackColor = visualColor;
+                }
+                else
+                {
+                    panelTopCardControl.BackColor = System.Drawing.Color.Transparent;
+                }
+                
                 MessageBox.Show("Your turn");
                 panelHandControl.Enabled = true;
                 btnDraw.Enabled = true;
@@ -128,57 +143,32 @@ namespace UNO
                 Application.Exit();
             }
         }
-        private void ShowColorMenu(Card wildCard)
+        private void SetupColorButtons(Card selectedCard)
         {
-            
-            Panel pnlColors = new Panel();
-            pnlColors.Size = new Size(200, 200);
-            
-            pnlColors.Location = new Point((this.Width - 200) / 2, (this.Height - 200) / 2);
-            pnlColors.BackColor = Color.Gray;
-            pnlColors.Name = "pnlColorSelect";
-
+            int x = 0, y = 0, spacing = 50;
+            System.Drawing.Color[] colors = {
+                System.Drawing.Color.Red,
+                System.Drawing.Color.Blue,
+                System.Drawing.Color.Yellow,
+                System.Drawing.Color.Green
+            };
             string[] colorNames = { "Red", "Blue", "Yellow", "Green" };
-            Color[] drawColors = { Color.Red, Color.Blue, Color.Yellow, Color.Green };
-
-            int x = 10, y = 10;
-
-            
             for (int i = 0; i < 4; i++)
             {
                 Button btn = new Button();
-                btn.Text = colorNames[i];
-                btn.BackColor = drawColors[i];
-                btn.Size = new Size(80, 80);
+                btn.Size = new Size(40, 40);
                 btn.Location = new Point(x, y);
-
-                
-                btn.Click += (s, e) =>
+                btn.BackColor = colors[i];
+                btn.Text = colorNames[i];
+                btn.Click += (s, ev) =>
                 {
-                    
-                    Enum.TryParse(btn.Text, out Colors selectedColor);
-
-                    
-                    this.Controls.Remove(pnlColors);
-                    panelHandControl.Enabled = true;
-
-                    
-                    PlayCardAndSend(wildCard, selectedColor);
+                    Enum.TryParse(btn.Text, out Colors parsedColor);
+                    panel1.Visible = false;
+                    PlayCardAndSend(selectedCard, parsedColor);
                 };
-
-                pnlColors.Controls.Add(btn);
-
-                
-                x += 90;
-                if (i == 1) { x = 10; y += 90; }
+                panel1.Controls.Add(btn);
+                x += spacing;
             }
-
-            
-            this.Controls.Add(pnlColors);
-            pnlColors.BringToFront();
-
-           
-            panelHandControl.Enabled = false;
         }
         private void PlayCardAndSend(Card card, Colors finalColor)
         {
@@ -214,9 +204,10 @@ namespace UNO
                 if (selectedCard.value == Val.Wild || selectedCard.value == Val.WildDrawFour)
                 {
 
-                    ShowColorMenu(selectedCard);
+                    SetupColorButtons(selectedCard);
                     return;
                 }
+
                 PlayCardAndSend(selectedCard, selectedCard.color);
             }
             else
@@ -250,8 +241,9 @@ namespace UNO
                 game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
                 SendMessage("DRAW");
                 panelHandControl.Enabled = false;
+                btnDraw.Enabled = false;
             }
-            this.Enabled = false;
+            
         }
 
         private void UNOClient_Load(object sender, EventArgs e)

@@ -80,9 +80,12 @@ namespace UNO
             string[] parts = text.Split('_');
             Colors c = (Colors)Enum.Parse(typeof(Colors), parts[0]);
             Val v = (Val)Enum.Parse(typeof(Val), parts[1]);
-            if (v == Val.Wild || v == Val.WildDrawFour) return new WildCard(c, v);
-            if (v == Val.Skip || v == Val.Reverse || v == Val.DrawTwo) return new SpecialCard(c, v);
-            else return new NormalCard(c, v);
+            Card createdCard;
+
+            if (v == Val.Wild || v == Val.WildDrawFour) createdCard= new WildCard(c, v);
+            if (v == Val.Skip || v == Val.Reverse || v == Val.DrawTwo) createdCard = new SpecialCard(c, v);
+            else createdCard = new NormalCard(c, v);
+            return createdCard;
         }
         private void ProcessData(string data)
         {
@@ -96,6 +99,15 @@ namespace UNO
                     Card playedCard = StringToCard(cardData);
                     game.setTopCard(playedCard);
                     game.ShowTopCard(panelTopCardControl);
+                    if(playedCard.value==Val.Wild||playedCard.value==Val.WildDrawFour)
+                    {
+                        System.Drawing.Color visualColor = System.Drawing.Color.FromName(playedCard.color.ToString());
+                        panelTopCardControl.BackColor = visualColor;
+                    }
+                    else
+                    {
+                        panelTopCardControl.BackColor = System.Drawing.Color.Transparent;
+                    }
                     MessageBox.Show("Opponent played " + playedCard.ToString());
                     panelHandControl.Enabled = true;
                 }

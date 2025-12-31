@@ -47,7 +47,7 @@
             // 
             this.panelTopCardControl.Location = new System.Drawing.Point(349, 74);
             this.panelTopCardControl.Name = "panelTopCardControl";
-            this.panelTopCardControl.Size = new System.Drawing.Size(149, 184);
+            this.panelTopCardControl.Size = new System.Drawing.Size(136, 178);
             this.panelTopCardControl.TabIndex = 1;
             // 
             // btnDraw
