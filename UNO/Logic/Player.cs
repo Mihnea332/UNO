@@ -90,7 +90,8 @@ namespace UNO.Logic
             
                
                 return true;
-            
+            if ((TopCard.value == Val.Wild || TopCard.value == Val.WildDrawFour) && TopCard.color == Colors.None)
+                return true;
 
             
             if (TopCard.color == CardToPlay.color || TopCard.value == CardToPlay.value)

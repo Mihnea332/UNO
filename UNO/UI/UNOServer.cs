@@ -51,19 +51,22 @@ namespace UNO
             {
                 server = new TcpListener(System.Net.IPAddress.Any, 3000);
                 server.Start();
-                MessageBox.Show("Server started! Waiting for Player 2");
+                MessageBox.Show("Server started! Waiting for Player 2");              
                 connection = server.AcceptTcpClient();
                 stream = connection.GetStream();
                 MessageBox.Show("Player 2 connected!");
+                lblConnect.Text = "Connected!";
                 string handString = "";
-                for (int i = 0; i < 7; i++)
+                for (int i = 0; i < 5; i++)
                 {
                     Card c = game.getdeck().Draw();
                     string cardText = c.color.ToString() + "_" + c.value.ToString();
                     handString = handString + cardText+";";
                 }
                 SendMessage("HAND:" + handString);
+                
                 Card top = game.getTopCard();
+                
                 string topCardText = top.color.ToString() + "_" + top.value.ToString();
                 SendMessage("TOP:" + topCardText);
                 Thread listenthread = new Thread(ListenToClient);
@@ -93,38 +96,85 @@ namespace UNO
             {
                 string[] parts = data.Split(':');
                 string command = parts[0];
-                if(command=="PLAY")
+
+                if (command == "PLAY")
                 {
-                    string cardData = parts[1];
-                    Card playedCard = StringToCard(cardData);
-                    game.setTopCard(playedCard);
+                    Card c = StringToCard(parts[1]);
+
+                    game.setTopCard(c);
                     game.ShowTopCard(panelTopCardControl);
-                    if(playedCard.value==Val.Wild||playedCard.value==Val.WildDrawFour)
+
+                    if (c.value == Val.Wild || c.value == Val.WildDrawFour)
                     {
-                        System.Drawing.Color visualColor = System.Drawing.Color.FromName(playedCard.color.ToString());
+                        System.Drawing.Color visualColor = System.Drawing.Color.FromName(c.color.ToString());
                         panelTopCardControl.BackColor = visualColor;
                     }
                     else
                     {
                         panelTopCardControl.BackColor = System.Drawing.Color.Transparent;
                     }
-                    MessageBox.Show("Opponent played " + playedCard.ToString());
-                    panelHandControl.Enabled = true;
+
+                    if (c.value == Val.DrawTwo)
+                    {
+                       // MessageBox.Show("Ai primit +2! Tragi 2 cărți și stai o tură.");
+                        Player me = game.getcurrentPlayer();
+                        for (int i = 0; i < 2; i++)
+                        {
+                            Card drawn = game.getdeck().Draw();
+                            if (drawn != null) me.getHand().Add(drawn);
+                        }
+                        me.ShowHand(panelHandControl, PictureBox_Click);
+                        SendMessage("SKIP");
+                    }
+                    else if (c.value == Val.Skip)
+                    {
+                       // MessageBox.Show("Ai primit Skip! Stai o tură.");
+                        SendMessage("SKIP");
+                    }
+                    else if (c.value == Val.WildDrawFour)
+                    {
+                       // MessageBox.Show("Ai primit +4! Tragi 4 cărți și stai o tură.");
+                        Player me = game.getcurrentPlayer();
+                        for (int i = 0; i < 4; i++)
+                        {
+                            Card drawn = game.getdeck().Draw();
+                            if (drawn != null) me.getHand().Add(drawn);
+                        }
+                        me.ShowHand(panelHandControl, PictureBox_Click);
+                        SendMessage("SKIP");
+                    }
+                    else
+                    {
+                       // MessageBox.Show("E rândul tău!");
+                        panelHandControl.Enabled = true;
+                        btnDraw.Enabled = true;
+                        lblTurn.Text = "Your turn";
+                    }
                 }
-                else if(command=="DRAW")
+                else if (command == "DRAW")
                 {
-                    MessageBox.Show("Opponent drew a card");
+                   // MessageBox.Show("Adversarul a tras o carte. E rândul tău!");
                     panelHandControl.Enabled = true;
+                    btnDraw.Enabled = true;
+                    lblTurn.Text = "Your turn";
                 }
-                else if (command=="WIN")
+                else if (command == "WIN")
                 {
-                    MessageBox.Show("Opponent won!");
+                    MessageBox.Show("You lost");
                     Application.Exit();
-                }    
+                }
+                else if (command == "SKIP")
+                {
+                   // MessageBox.Show("Adversarul a stat o tură (din cauza +2/+4/Skip). Joci din nou!");
+                    
+                    panelHandControl.Enabled = true;
+                    btnDraw.Enabled = true;
+                    lblTurn.Text = "Your turn";
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error" + ex.Message);
+                MessageBox.Show("Eroare: " + ex.Message);
             }
         }
         private void ListenToClient()
@@ -150,7 +200,9 @@ namespace UNO
                 {
                     break;
                 }
+
             }
+            
         }
         private void PlayCardAndSend(Card card,Colors finalColor)
         {
@@ -171,6 +223,8 @@ namespace UNO
                 SendMessage(msg);
             }
             panelHandControl.Enabled = false;
+            btnDraw.Enabled = false;
+            lblTurn.Text = "Opponent's turn";
         }
         private void PictureBox_Click(object sender, EventArgs e)
         {
@@ -183,6 +237,8 @@ namespace UNO
                 if(selectedCard.value==Val.Wild|| selectedCard.value==Val.WildDrawFour)
                 {
                     panelHandControl.Enabled = false;
+                    btnDraw.Enabled = false;
+                    lblTurn.Text = "Opponent's turn";
                     panel1.Controls.Clear();
                     panel1.Visible = true;
                     SetupColorButtons(selectedCard);
@@ -226,18 +282,15 @@ namespace UNO
         {
             Image original = Image.FromFile(@"..\..\Resources\Deck.png");
             Image resize = new Bitmap(original, new Size(90, 190)); 
-            button1.Image = resize;
-
-
-            game.getcurrentPlayer().getHand().Add(new WildCard(Colors.None, Val.Wild));
-            game.getcurrentPlayer().getHand().Add(new WildCard(Colors.None, Val.WildDrawFour));
-            game.getcurrentPlayer().getHand().Add(new SpecialCard(Colors.Red, Val.Skip));
-            game.getcurrentPlayer().getHand().Add(new SpecialCard(Colors.Red, Val.Skip));
+            btnDraw.Image = resize;
             game.getdeck().deck_played.Add(game.getTopCard());
             game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
             game.ShowTopCard(panelTopCardControl);
             t = new Thread(StartServer);
             t.Start();
+            panelHandControl.Enabled = false;
+            btnDraw.Enabled = false;
+            lblTurn.Text = "Opponent's turn";
         }
 
 
@@ -267,7 +320,15 @@ namespace UNO
                 game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
                 SendMessage("DRAW");
                 panelHandControl.Enabled = false;
+                lblTurn.Text = "Opponent's turn";
+                btnDraw.Enabled = false;
+
             }    
+        }
+
+        private void panelTopCardControl_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

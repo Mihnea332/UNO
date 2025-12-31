@@ -68,6 +68,7 @@ namespace UNO
                 StreamWriter writer = new StreamWriter(stream);
                 writer.AutoFlush = true;
                 writer.WriteLine(msg);
+                
             }
         }
         private void ListenToClient()
@@ -75,6 +76,7 @@ namespace UNO
             StreamReader reader = new StreamReader(stream);
             while(isConnected)
             {
+                
                 try
                 {
                     string data = reader.ReadLine();
@@ -126,21 +128,61 @@ namespace UNO
                 {
                     panelTopCardControl.BackColor = System.Drawing.Color.Transparent;
                 }
-                
-                MessageBox.Show("Your turn");
-                panelHandControl.Enabled = true;
-                btnDraw.Enabled = true;
+                if(c.value==Val.DrawTwo)
+                {
+                   // MessageBox.Show("Draw Two!");
+                    Player me = game.getcurrentPlayer();
+                    for(int i=0;i<2;i++)
+                    {
+                        Card drawn = game.getdeck().Draw();
+                        if (drawn != null) me.getHand().Add(drawn);
+                    }
+                    me.ShowHand(panelHandControl, PictureBox_Click);
+                    SendMessage("SKIP");
+                }
+                else if(c.value==Val.Skip)
+                {
+                    //MessageBox.Show("Skip played!");
+                    SendMessage("SKIP");
+                }
+                else if(c.value==Val.WildDrawFour)
+                {
+                   // MessageBox.Show("Draw Four!");
+                    Player me = game.getcurrentPlayer();
+                    for(int i=0;i<4;i++)
+                    {
+                        Card drawn = game.getdeck().Draw();
+                        if (drawn != null) me.getHand().Add(drawn);
+                    }
+                    me.ShowHand(panelHandControl, PictureBox_Click);
+                    SendMessage("SKIP");
+                }
+                else
+                {
+                   // MessageBox.Show("Your turn");
+                    panelHandControl.Enabled = true;
+                    btnDraw.Enabled = true;
+                    lblTurn.Text = "Your turn";
+                }
             }
             else if (command == "DRAW")
             {
-                MessageBox.Show("Opponent Drew.Your Turn");
+               // MessageBox.Show("Opponent Drew.Your Turn");
                 panelHandControl.Enabled = true;
                 btnDraw.Enabled = true;
+                lblTurn.Text = "Your turn";
             }
             else if (command == "WIN")
             {
                 MessageBox.Show("You lost");
                 Application.Exit();
+            }
+            else if(command=="SKIP")
+            {
+               // MessageBox.Show("Opponent Skipped.");
+                panelHandControl.Enabled = true;
+                btnDraw.Enabled = true;
+                lblTurn.Text = "Your turn";
             }
         }
         private void SetupColorButtons(Card selectedCard)
@@ -189,6 +231,9 @@ namespace UNO
                 SendMessage(msg);
             }
             panelHandControl.Enabled = false;
+            btnDraw.Enabled = false;
+
+            lblTurn.Text = "Opponent's turn";
         }
         private void PictureBox_Click(object sender,EventArgs e)
         {
@@ -226,6 +271,7 @@ namespace UNO
                 MessageBox.Show("Connected");
                 btnConnect.Visible = false;
                 txtIP.Visible = false;
+                btnDraw.Visible = true;
             }
             catch(Exception ex)
             {
@@ -242,13 +288,23 @@ namespace UNO
                 SendMessage("DRAW");
                 panelHandControl.Enabled = false;
                 btnDraw.Enabled = false;
+                lblTurn.Text = "Opponent's turn";
             }
             
         }
 
         private void UNOClient_Load(object sender, EventArgs e)
         {
-            game.getcurrentPlayer().getHand().Add(new WildCard(Colors.None, Val.Wild));
+            
+            Image original = Image.FromFile(@"..\..\Resources\Deck.png");
+            Image resize = new Bitmap(original, new Size(90, 190));
+            btnDraw.Image = resize;
+            lblTurn.Text = "Your turn";
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }
