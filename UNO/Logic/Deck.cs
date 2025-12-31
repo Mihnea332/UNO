@@ -14,7 +14,7 @@ namespace UNO.Logic
     {
         public List<Card> deck;
         public List<Card> deck_played;
-       public Deck()
+        public Deck()
         {
             deck = new List<Card>();
             deck_played = new List<Card>();
@@ -83,10 +83,10 @@ namespace UNO.Logic
                 }
 
                 deck_played.Clear();
-                deck_played.Add(TopCard); 
+                deck_played.Add(TopCard);
                 deck = deck_temp;
 
-               
+
                 Random rnd = new Random();
                 for (int i = 0; i < deck.Count; i++)
                 {
@@ -113,6 +113,23 @@ namespace UNO.Logic
             deck.RemoveAt(deck.Count - 1);
             return temp;
         }
-        
+        public Card Draw()
+        {
+            if (deck.Count == 0)
+            {
+
+                if (deck_played.Count <= 1) return null;
+                Card topCard = deck_played[deck_played.Count - 1];
+                deck_played.RemoveAt(deck_played.Count - 1);
+                deck.AddRange(deck_played);
+                deck_played.Clear();
+                deck_played.Add(topCard);
+                Shuffle();
+            }
+            Card cardDrawn = deck[deck.Count - 1];
+            deck.RemoveAt(deck.Count - 1);
+            return cardDrawn;
+
+        }
     }
 }

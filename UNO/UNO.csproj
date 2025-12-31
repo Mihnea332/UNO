@@ -47,11 +47,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UI\UNOGame.cs">
+    <Compile Include="UI\UNOServer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\UNOGame.Designer.cs">
-      <DependentUpon>UNOGame.cs</DependentUpon>
+    <Compile Include="UI\UNOServer.Designer.cs">
+      <DependentUpon>UNOServer.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\MainMenu.cs">
       <SubType>Form</SubType>
@@ -69,8 +69,14 @@
     <Compile Include="Model\WildCard.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="UI\UNOGame.resx">
-      <DependentUpon>UNOGame.cs</DependentUpon>
+    <Compile Include="UNOClient.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UNOClient.Designer.cs">
+      <DependentUpon>UNOClient.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="UI\UNOServer.resx">
+      <DependentUpon>UNOServer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\MainMenu.resx">
       <DependentUpon>MainMenu.cs</DependentUpon>
@@ -85,6 +91,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="UNOClient.resx">
+      <DependentUpon>UNOClient.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
