@@ -12,6 +12,7 @@ using System.Threading;
 using UNO.Model;
 using UNO.Logic;
 using System.IO;
+using System.Xml.Linq;
 
 namespace UNO
 {
@@ -23,10 +24,13 @@ namespace UNO
         private bool isConnected = false;
         private Game game;
         private Card currentTopCard;
+        private int opponentCardCount=5;
+
         public UNOClient()
         {
             InitializeComponent();
             game = new Game();
+            this.Text = "UNO Client - Player 2";
             this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
             this.btnDraw.Click += new System.EventHandler(this.btnDraw_Click);
             game.getcurrentPlayer().getHand().Clear();
@@ -107,6 +111,7 @@ namespace UNO
                     if (c != null) me.getHand().Add(c);
                 }
                 me.ShowHand(panelHandControl, PictureBox_Click);
+                
             }
             else if (command == "TOP")
             {
@@ -116,6 +121,8 @@ namespace UNO
             }
             else if (command == "PLAY")
             {
+                opponentCardCount--;
+                game.ShowOpponentHand(panelOpponentHand, opponentCardCount);
                 Card c = StringToCard(parts[1]);
                 game.setTopCard(c);
                 game.ShowTopCard(panelTopCardControl);
@@ -167,10 +174,25 @@ namespace UNO
             }
             else if (command == "DRAW")
             {
-               // MessageBox.Show("Opponent Drew.Your Turn");
+                opponentCardCount++;
+                game.ShowOpponentHand(panelOpponentHand, opponentCardCount);
+                // MessageBox.Show("Opponent Drew.Your Turn");
                 panelHandControl.Enabled = true;
                 btnDraw.Enabled = true;
                 lblTurn.Text = "Your turn";
+            }
+            else if(command=="DRAW_CARD")
+            {
+                string cardData = parts[1].Replace(";", "").Trim();
+                Card drawnCard = StringToCard(cardData);
+                if(drawnCard!=null)
+                {
+                    game.getcurrentPlayer().getHand().Add(drawnCard);
+                    game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
+                    panelHandControl.Enabled = false;
+                    btnDraw.Enabled = false;
+                    lblTurn.Text = "Opponent's turn";
+                }
             }
             else if (command == "WIN")
             {
@@ -241,6 +263,18 @@ namespace UNO
             Card selectedCard = clickedPB.Tag as Card;
             bool isValid = false;
             Card top = game.getTopCard();
+            if(selectedCard.value==Val.DrawTwo)
+            {
+                opponentCardCount += 2;
+                game.ShowOpponentHand(panelOpponentHand, opponentCardCount);
+
+            }
+            if(selectedCard.value==Val.WildDrawFour)
+            {
+                opponentCardCount += 4;
+                game.ShowOpponentHand(panelOpponentHand, opponentCardCount);
+
+            }
             if (selectedCard.color == top.color) isValid = true;
             else if (selectedCard.value == top.value) isValid = true;
             else if (selectedCard.value == Val.Wild || selectedCard.value == Val.WildDrawFour) isValid = true;
@@ -280,16 +314,11 @@ namespace UNO
         }
         private void btnDraw_Click(object sender,EventArgs e)
         {
-            Card c = game.getdeck().Draw();
-            if (c != null)
-            {
-                game.getcurrentPlayer().getHand().Add(c);
-                game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
                 SendMessage("DRAW");
                 panelHandControl.Enabled = false;
                 btnDraw.Enabled = false;
                 lblTurn.Text = "Opponent's turn";
-            }
+            
             
         }
 
@@ -300,6 +329,8 @@ namespace UNO
             Image resize = new Bitmap(original, new Size(90, 190));
             btnDraw.Image = resize;
             lblTurn.Text = "Your turn";
+            game.ShowOpponentHand(panelOpponentHand, opponentCardCount);
+
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)

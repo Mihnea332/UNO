@@ -30,12 +30,13 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UNOClient));
             this.panelHandControl = new System.Windows.Forms.Panel();
-            this.panelTopCardControl = new System.Windows.Forms.Panel();
-            this.btnDraw = new System.Windows.Forms.Button();
             this.txtIP = new System.Windows.Forms.TextBox();
             this.btnConnect = new System.Windows.Forms.Button();
+            this.panelTopCardControl = new System.Windows.Forms.Panel();
+            this.btnDraw = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.lblTurn = new System.Windows.Forms.Label();
+            this.panelOpponentHand = new System.Windows.Forms.Panel();
             this.panelHandControl.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,6 +50,23 @@
             this.panelHandControl.Name = "panelHandControl";
             this.panelHandControl.Size = new System.Drawing.Size(1024, 169);
             this.panelHandControl.TabIndex = 0;
+            // 
+            // txtIP
+            // 
+            this.txtIP.Location = new System.Drawing.Point(458, 90);
+            this.txtIP.Name = "txtIP";
+            this.txtIP.Size = new System.Drawing.Size(100, 22);
+            this.txtIP.TabIndex = 2;
+            this.txtIP.Text = "127.0.0.1";
+            // 
+            // btnConnect
+            // 
+            this.btnConnect.Location = new System.Drawing.Point(574, 80);
+            this.btnConnect.Name = "btnConnect";
+            this.btnConnect.Size = new System.Drawing.Size(83, 43);
+            this.btnConnect.TabIndex = 3;
+            this.btnConnect.Text = "Connect";
+            this.btnConnect.UseVisualStyleBackColor = true;
             // 
             // panelTopCardControl
             // 
@@ -69,23 +87,6 @@
             this.btnDraw.UseVisualStyleBackColor = true;
             this.btnDraw.Visible = false;
             // 
-            // txtIP
-            // 
-            this.txtIP.Location = new System.Drawing.Point(458, 90);
-            this.txtIP.Name = "txtIP";
-            this.txtIP.Size = new System.Drawing.Size(100, 22);
-            this.txtIP.TabIndex = 2;
-            this.txtIP.Text = "127.0.0.1";
-            // 
-            // btnConnect
-            // 
-            this.btnConnect.Location = new System.Drawing.Point(574, 80);
-            this.btnConnect.Name = "btnConnect";
-            this.btnConnect.Size = new System.Drawing.Size(83, 43);
-            this.btnConnect.TabIndex = 3;
-            this.btnConnect.Text = "Connect";
-            this.btnConnect.UseVisualStyleBackColor = true;
-            // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.Transparent;
@@ -99,10 +100,19 @@
             // lblTurn
             // 
             this.lblTurn.AutoSize = true;
-            this.lblTurn.Location = new System.Drawing.Point(482, 9);
+            this.lblTurn.Location = new System.Drawing.Point(875, 253);
             this.lblTurn.Name = "lblTurn";
             this.lblTurn.Size = new System.Drawing.Size(0, 16);
             this.lblTurn.TabIndex = 5;
+            // 
+            // panelOpponentHand
+            // 
+            this.panelOpponentHand.BackColor = System.Drawing.Color.Transparent;
+            this.panelOpponentHand.Location = new System.Drawing.Point(19, 11);
+            this.panelOpponentHand.Margin = new System.Windows.Forms.Padding(4);
+            this.panelOpponentHand.Name = "panelOpponentHand";
+            this.panelOpponentHand.Size = new System.Drawing.Size(1024, 169);
+            this.panelOpponentHand.TabIndex = 8;
             // 
             // UNOClient
             // 
@@ -116,6 +126,7 @@
             this.Controls.Add(this.btnDraw);
             this.Controls.Add(this.panelTopCardControl);
             this.Controls.Add(this.panelHandControl);
+            this.Controls.Add(this.panelOpponentHand);
             this.DoubleBuffered = true;
             this.Name = "UNOClient";
             this.Text = "UNOClient";
@@ -136,5 +147,6 @@
         private System.Windows.Forms.Button btnConnect;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label lblTurn;
+        private System.Windows.Forms.Panel panelOpponentHand;
     }
 }

@@ -22,10 +22,11 @@ namespace UNO
         private NetworkStream stream;
         private Thread t;
         private bool isServerRunning = true;
-
+        private int opponentCardCount = 5;
         public UNOServer()
         {
             InitializeComponent();
+            this.Text = "UNO Server - Player 1";
             game = new Game();
             Control.CheckForIllegalCrossThreadCalls = false;
             this.FormClosed += (s, e) =>
@@ -99,6 +100,8 @@ namespace UNO
 
                 if (command == "PLAY")
                 {
+                    opponentCardCount--;
+                    game.ShowOpponentHand(panelOpponentHand, opponentCardCount);
                     Card c = StringToCard(parts[1]);
 
                     game.setTopCard(c);
@@ -153,7 +156,14 @@ namespace UNO
                 }
                 else if (command == "DRAW")
                 {
-                   // MessageBox.Show("Adversarul a tras o carte. E rândul tău!");
+                    opponentCardCount++;
+                    game.ShowOpponentHand(panelOpponentHand, opponentCardCount);
+                    Card c = game.getdeck().Draw();
+                    string cardText = c.color.ToString() + "_" + c.value.ToString();
+                    string handString = "";
+                    handString = handString + cardText + ";";
+                    SendMessage("DRAW_CARD:" + handString);
+                    // MessageBox.Show("Adversarul a tras o carte. E rândul tău!");
                     panelHandControl.Enabled = true;
                     btnDraw.Enabled = true;
                     lblTurn.Text = "Your turn";
@@ -232,6 +242,16 @@ namespace UNO
             if (clickedCard == null) return;
             Card selectedCard = clickedCard.Tag as Card;
             if (selectedCard == null) return;
+            if(selectedCard.value==Val.DrawTwo)
+            {
+                opponentCardCount += 2;
+                game.ShowOpponentHand(panelOpponentHand, opponentCardCount);
+            }
+            if (selectedCard.value==Val.WildDrawFour)
+            {
+                opponentCardCount += 4;
+                game.ShowOpponentHand(panelOpponentHand, opponentCardCount);
+            }
             if (game.getcurrentPlayer().IsCardValid(game.getTopCard(), selectedCard)) 
             {
                 if(selectedCard.value==Val.Wild|| selectedCard.value==Val.WildDrawFour)
@@ -291,6 +311,7 @@ namespace UNO
             panelHandControl.Enabled = false;
             btnDraw.Enabled = false;
             lblTurn.Text = "Opponent's turn";
+            game.ShowOpponentHand(panelOpponentHand, opponentCardCount);
         }
 
 

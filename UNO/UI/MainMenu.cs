@@ -15,6 +15,7 @@ namespace UNO
         public MainMenu()
         {
             InitializeComponent();
+            this.Text = "Main Menu";
         }
 
         private void Form2_Load(object sender, EventArgs e)

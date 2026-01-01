@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using UNO.Model;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar;
 namespace UNO.Logic
 {
     public class Game
@@ -104,6 +105,7 @@ namespace UNO.Logic
 
             };
 
+
             string path = TopCard.GetCardName();
             if (File.Exists(path))
                 pb.Image = Image.FromFile(path);
@@ -111,6 +113,46 @@ namespace UNO.Logic
                 pb.BackColor = Color.Gray;
 
             parent.Controls.Add(pb);
+        }
+        public void ShowOpponentHand(Control parent, int count)
+        {
+            parent.Controls.Clear();
+            int cardWidth = 80;
+            int cardHeight = 120;
+            int spacing = -100;
+            int x = 450;
+            int y = 10;
+           
+            for (int i = 0; i < count; i++)
+            {
+                PictureBox pb = new PictureBox
+                {
+                    Size = new Size(60, 90),
+                    Location = new Point(x, y),
+                    SizeMode = PictureBoxSizeMode.StretchImage,
+                    BackColor = Color.Transparent,
+                    BorderStyle = BorderStyle.FixedSingle 
+                };
+
+                
+                if (File.Exists(@"..\..\Resources\Deck.png"))
+                {
+                    
+                    pb.Image = Image.FromFile(@"..\..\Resources\Deck.png");
+                }
+                else
+                {
+                    pb.BackColor = Color.OrangeRed; // O culoare vizibilă dacă nu găsește poza
+                }
+
+               
+                parent.Controls.Add(pb);
+                // -----------------------------
+
+                pb.BringToFront();
+
+                x += 60 + spacing;
+            }
         }
     }
 }
