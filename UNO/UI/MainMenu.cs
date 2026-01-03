@@ -16,6 +16,10 @@ namespace UNO
         {
             InitializeComponent();
             this.Text = "Main Menu";
+            this.FormClosed += (s, e) =>
+            {
+                Environment.Exit(0);
+            };
         }
 
         private void Form2_Load(object sender, EventArgs e)

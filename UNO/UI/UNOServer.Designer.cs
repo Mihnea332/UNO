@@ -41,28 +41,25 @@
             // panelHandControl
             // 
             this.panelHandControl.BackColor = System.Drawing.Color.Transparent;
-            this.panelHandControl.Location = new System.Drawing.Point(3, 356);
-            this.panelHandControl.Margin = new System.Windows.Forms.Padding(4);
+            this.panelHandControl.Location = new System.Drawing.Point(2, 289);
             this.panelHandControl.Name = "panelHandControl";
-            this.panelHandControl.Size = new System.Drawing.Size(1024, 169);
+            this.panelHandControl.Size = new System.Drawing.Size(768, 137);
             this.panelHandControl.TabIndex = 0;
             // 
             // panelTopCardControl
             // 
             this.panelTopCardControl.BackColor = System.Drawing.Color.Transparent;
-            this.panelTopCardControl.Location = new System.Drawing.Point(461, 130);
-            this.panelTopCardControl.Margin = new System.Windows.Forms.Padding(4);
+            this.panelTopCardControl.Location = new System.Drawing.Point(346, 106);
             this.panelTopCardControl.Name = "panelTopCardControl";
-            this.panelTopCardControl.Size = new System.Drawing.Size(147, 181);
+            this.panelTopCardControl.Size = new System.Drawing.Size(110, 147);
             this.panelTopCardControl.TabIndex = 1;
             this.panelTopCardControl.Paint += new System.Windows.Forms.PaintEventHandler(this.panelTopCardControl_Paint);
             // 
             // btnDraw
             // 
-            this.btnDraw.Location = new System.Drawing.Point(919, 15);
-            this.btnDraw.Margin = new System.Windows.Forms.Padding(4);
+            this.btnDraw.Location = new System.Drawing.Point(689, 12);
             this.btnDraw.Name = "btnDraw";
-            this.btnDraw.Size = new System.Drawing.Size(108, 146);
+            this.btnDraw.Size = new System.Drawing.Size(81, 119);
             this.btnDraw.TabIndex = 2;
             this.btnDraw.UseVisualStyleBackColor = true;
             this.btnDraw.Click += new System.EventHandler(this.button1_Click);
@@ -70,47 +67,48 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.Transparent;
-            this.panel1.Location = new System.Drawing.Point(409, 299);
-            this.panel1.Margin = new System.Windows.Forms.Padding(4);
+            this.panel1.Location = new System.Drawing.Point(307, 243);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(251, 49);
+            this.panel1.Size = new System.Drawing.Size(188, 40);
             this.panel1.TabIndex = 3;
             this.panel1.Visible = false;
             // 
             // lblConnect
             // 
             this.lblConnect.AutoSize = true;
-            this.lblConnect.Location = new System.Drawing.Point(12, 188);
+            this.lblConnect.Location = new System.Drawing.Point(9, 153);
+            this.lblConnect.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblConnect.Name = "lblConnect";
-            this.lblConnect.Size = new System.Drawing.Size(128, 16);
+            this.lblConnect.Size = new System.Drawing.Size(105, 13);
             this.lblConnect.TabIndex = 4;
             this.lblConnect.Text = "Waiting for Player 2..";
             // 
             // lblTurn
             // 
             this.lblTurn.AutoSize = true;
-            this.lblTurn.Location = new System.Drawing.Point(875, 253);
+            this.lblTurn.Location = new System.Drawing.Point(656, 206);
+            this.lblTurn.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblTurn.Name = "lblTurn";
-            this.lblTurn.Size = new System.Drawing.Size(0, 16);
+            this.lblTurn.Size = new System.Drawing.Size(0, 13);
             this.lblTurn.TabIndex = 5;
             // 
             // panelOpponentHand
             // 
             this.panelOpponentHand.BackColor = System.Drawing.Color.Transparent;
-            this.panelOpponentHand.Location = new System.Drawing.Point(3, 11);
-            this.panelOpponentHand.Margin = new System.Windows.Forms.Padding(4);
+            this.panelOpponentHand.Location = new System.Drawing.Point(2, 9);
             this.panelOpponentHand.Name = "panelOpponentHand";
-            this.panelOpponentHand.Size = new System.Drawing.Size(1024, 169);
+            this.panelOpponentHand.Size = new System.Drawing.Size(768, 137);
             this.panelOpponentHand.TabIndex = 7;
+            this.panelOpponentHand.Paint += new System.Windows.Forms.PaintEventHandler(this.panelOpponentHand_Paint);
             // 
             // UNOServer
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.ClientSize = new System.Drawing.Size(1043, 567);
+            this.ClientSize = new System.Drawing.Size(782, 461);
             this.Controls.Add(this.lblTurn);
             this.Controls.Add(this.lblConnect);
             this.Controls.Add(this.panel1);
@@ -119,7 +117,6 @@
             this.Controls.Add(this.panelTopCardControl);
             this.Controls.Add(this.panelOpponentHand);
             this.DoubleBuffered = true;
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "UNOServer";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);

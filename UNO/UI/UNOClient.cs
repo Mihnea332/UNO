@@ -297,12 +297,14 @@ namespace UNO
         {
             try
             {
-                client = new TcpClient("127.0.0.1", 3000);
+                string ipAddress = txtIP.Text;
+                client = new TcpClient(ipAddress, 3000);
                 stream = client.GetStream();
                 isConnected = true;
                 t = new Thread(ListenToClient);
                 t.Start();
                 MessageBox.Show("Connected");
+                game.ShowOpponentHand(panelOpponentHand, opponentCardCount);
                 btnConnect.Visible = false;
                 txtIP.Visible = false;
                 btnDraw.Visible = true;
@@ -329,7 +331,7 @@ namespace UNO
             Image resize = new Bitmap(original, new Size(90, 190));
             btnDraw.Image = resize;
             lblTurn.Text = "Your turn";
-            game.ShowOpponentHand(panelOpponentHand, opponentCardCount);
+            
 
         }
 

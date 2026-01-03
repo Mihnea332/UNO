@@ -12,16 +12,16 @@ namespace UNO.Logic
 {
     public class Player
     {
-        string Name;
+
         private List<Card> Hand;
         public List<Card> getHand()
         {
             return Hand;
         }
-        public Player(string Name)
+        public Player(string index)
         {
             Hand = new List<Card>();
-            this.Name = Name;
+
             
         }
         public void AddCard(Card card)

@@ -58,7 +58,7 @@ namespace UNO.Logic
             Players = new List<Player>();
             for (int i=0;i<2;i++)
             {
-                Player p = new Player("Player " + (i + 1));
+                Player p = new Player(i.ToString());
                 deck.Deal(p);
                 Players.Add(p);
             }
@@ -71,26 +71,7 @@ namespace UNO.Logic
         {
             TopCard.color = ChosenColor;
         }
-         public void ApplyEffect(Card PlayedCard,Colors ChosenColor,Player AffectedPlayer)
-        {
-
-            switch (PlayedCard.value)
-            {
-
-                case Val.DrawTwo:
-                    deck.DrawCard(AffectedPlayer, TopCard);
-                    deck.DrawCard(AffectedPlayer, TopCard); 
-                    break;
-                case Val.Wild:
-                    UpdateColor(ChosenColor); 
-                    break;
-                case Val.WildDrawFour:
-                    UpdateColor(ChosenColor); 
-                    for (int i=0;i<4;i++)
-                        deck.DrawCard(AffectedPlayer, TopCard);
-                    break;
-            }
-        }
+         
         public void ShowTopCard(Control parent)
         {
             parent.Controls.Clear();
@@ -117,8 +98,6 @@ namespace UNO.Logic
         public void ShowOpponentHand(Control parent, int count)
         {
             parent.Controls.Clear();
-            int cardWidth = 80;
-            int cardHeight = 120;
             int spacing = -100;
             int x = 450;
             int y = 10;

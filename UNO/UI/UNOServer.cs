@@ -23,19 +23,39 @@ namespace UNO
         private Thread t;
         private bool isServerRunning = true;
         private int opponentCardCount = 5;
+        private bool backToMenu = false;
         public UNOServer()
         {
             InitializeComponent();
             this.Text = "UNO Server - Player 1";
             game = new Game();
-            Control.CheckForIllegalCrossThreadCalls = false;
+            //Control.CheckForIllegalCrossThreadCalls = false;
             this.FormClosed += (s, e) =>
             {
                 isServerRunning = false;
-                Environment.Exit(0);
+
+                if (!backToMenu)
+                {
+                    if (server != null) server.Stop();
+                    Environment.Exit(0);
+                }
+                
                 
             };
 
+        }
+        private void HandleClientDisconnect()
+        {
+            if (this.Disposing || this.IsDisposed) return;
+            this.Invoke((MethodInvoker)delegate
+            {
+                isServerRunning = false;
+                MessageBox.Show("Client Disconnected, returning to Main Menu");
+                backToMenu = true;
+                MainMenu menu = new MainMenu();
+                menu.Show();
+                this.Close();
+            });
         }
         private void SendMessage(string msg)
         {
@@ -52,15 +72,21 @@ namespace UNO
             {
                 server = new TcpListener(System.Net.IPAddress.Any, 3000);
                 server.Start();
-                MessageBox.Show("Server started! Waiting for Player 2");              
+                MessageBox.Show("Server started! Waiting for Player 2");
                 connection = server.AcceptTcpClient();
                 stream = connection.GetStream();
-                MessageBox.Show("Player 2 connected!");
-                lblConnect.Text = "Connected!";
-                string handString = "";
-                for (int i = 0; i < 5; i++)
+                this.Invoke((MethodInvoker)delegate
                 {
-                    Card c = game.getdeck().Draw();
+                    MessageBox.Show("Player 2 connected!");
+                    lblConnect.Text = "Connected!";
+                    game.ShowOpponentHand(panelOpponentHand, opponentCardCount);
+
+                });
+                Player player2 = game.getPlayers()[1];
+                string handString = "";
+                foreach(Card c in player2.getHand())
+                {
+                    
                     string cardText = c.color.ToString() + "_" + c.value.ToString();
                     handString = handString + cardText+";";
                 }
@@ -103,7 +129,7 @@ namespace UNO
                     opponentCardCount--;
                     game.ShowOpponentHand(panelOpponentHand, opponentCardCount);
                     Card c = StringToCard(parts[1]);
-
+                    game.ShowOpponentHand(panelOpponentHand, opponentCardCount);
                     game.setTopCard(c);
                     game.ShowTopCard(panelTopCardControl);
 
@@ -203,11 +229,13 @@ namespace UNO
                     }   
                     else
                     {
+                        HandleClientDisconnect();
                         break;
                     }
                 }
                 catch
                 {
+                    HandleClientDisconnect();
                     break;
                 }
 
@@ -311,7 +339,7 @@ namespace UNO
             panelHandControl.Enabled = false;
             btnDraw.Enabled = false;
             lblTurn.Text = "Opponent's turn";
-            game.ShowOpponentHand(panelOpponentHand, opponentCardCount);
+            
         }
 
 
@@ -348,6 +376,11 @@ namespace UNO
         }
 
         private void panelTopCardControl_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void panelOpponentHand_Paint(object sender, PaintEventArgs e)
         {
 
         }

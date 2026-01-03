@@ -14,6 +14,7 @@ namespace UNO.Logic
     {
         public List<Card> deck;
         public List<Card> deck_played;
+        
         public Deck()
         {
             deck = new List<Card>();
