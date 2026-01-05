@@ -32,6 +32,9 @@ namespace UNO
             //Control.CheckForIllegalCrossThreadCalls = false;
             this.FormClosed += (s, e) =>
             {
+                if (stream != null) stream.Close();
+                if (connection != null) connection.Close();
+                if (server != null) server.Stop();
                 isServerRunning = false;
 
                 if (!backToMenu)
@@ -272,12 +275,12 @@ namespace UNO
             if (selectedCard == null) return;
             if(selectedCard.value==Val.DrawTwo)
             {
-                opponentCardCount += 2;
+                
                 game.ShowOpponentHand(panelOpponentHand, opponentCardCount);
             }
             if (selectedCard.value==Val.WildDrawFour)
             {
-                opponentCardCount += 4;
+               
                 game.ShowOpponentHand(panelOpponentHand, opponentCardCount);
             }
             if (game.getcurrentPlayer().IsCardValid(game.getTopCard(), selectedCard)) 

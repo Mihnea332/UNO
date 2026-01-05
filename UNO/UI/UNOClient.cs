@@ -141,8 +141,7 @@ namespace UNO
                     Player me = game.getcurrentPlayer();
                     for(int i=0;i<2;i++)
                     {
-                        Card drawn = game.getdeck().Draw();
-                        if (drawn != null) me.getHand().Add(drawn);
+                        SendMessage("DRAW");
                     }
                     me.ShowHand(panelHandControl, PictureBox_Click);
                     SendMessage("SKIP");
@@ -158,8 +157,7 @@ namespace UNO
                     Player me = game.getcurrentPlayer();
                     for(int i=0;i<4;i++)
                     {
-                        Card drawn = game.getdeck().Draw();
-                        if (drawn != null) me.getHand().Add(drawn);
+                        SendMessage("DRAW");
                     }
                     me.ShowHand(panelHandControl, PictureBox_Click);
                     SendMessage("SKIP");
@@ -336,6 +334,11 @@ namespace UNO
         }
 
         private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void panelOpponentHand_Paint(object sender, PaintEventArgs e)
         {
 
         }
