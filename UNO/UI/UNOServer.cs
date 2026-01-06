@@ -29,7 +29,7 @@ namespace UNO
             InitializeComponent();
             this.Text = "UNO Server - Player 1";
             game = new Game();
-            //Control.CheckForIllegalCrossThreadCalls = false;
+            game.setcurrentPlayer(game.getPlayers()[0]);
             this.FormClosed += (s, e) =>
             {
                 if (stream != null) stream.Close();
@@ -138,11 +138,13 @@ namespace UNO
 
                     if (c.value == Val.Wild || c.value == Val.WildDrawFour)
                     {
+                        panelTopCardControl.Controls.Clear();
                         System.Drawing.Color visualColor = System.Drawing.Color.FromName(c.color.ToString());
                         panelTopCardControl.BackColor = visualColor;
                     }
                     else
                     {
+                        game.ShowTopCard(panelTopCardControl);
                         panelTopCardControl.BackColor = System.Drawing.Color.Transparent;
                     }
 
@@ -250,9 +252,18 @@ namespace UNO
             game.getcurrentPlayer().RemoveCard(card);
             card.color = finalColor;
             game.setTopCard(card);
-            game.ShowTopCard(panelTopCardControl);
             game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
-            if(game.getcurrentPlayer().getHand().Count==0)
+            if (card.value==Val.Wild|| card.value==Val.WildDrawFour)
+            {
+                panelTopCardControl.Controls.Clear();
+                panelTopCardControl.BackColor = System.Drawing.Color.FromName(finalColor.ToString());
+            }
+            else
+            {
+                game.ShowTopCard(panelTopCardControl);
+                panelTopCardControl.BackColor = System.Drawing.Color.Transparent;
+            }
+            if (game.getcurrentPlayer().getHand().Count == 0)
             {
                 SendMessage("WIN");
                 MessageBox.Show("You Win!");
@@ -260,7 +271,7 @@ namespace UNO
             }
             else
             {
-                string msg="PLAY:"+finalColor.ToString()+"_"+card.value.ToString();
+                string msg = "PLAY:" + finalColor.ToString() + "_" + card.value.ToString();
                 SendMessage(msg);
             }
             panelHandControl.Enabled = false;

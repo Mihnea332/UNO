@@ -14,8 +14,24 @@ namespace UNO.Logic
          private Deck deck;
         private List<Player> Players;
           private Card TopCard;
-        private int CurrentPlayerIndex;
         private Player currentPlayer;
+        public Game()
+        {
+
+            deck = new Deck();
+            deck.Generate();
+            deck.Shuffle();
+
+            Players = new List<Player>();
+            for (int i = 0; i < 2; i++)
+            {
+                Player p = new Player("null");
+                deck.Deal(p);
+                Players.Add(p);
+            }
+            TopCard = deck.GetTopCard();
+            
+        }
         public Deck getdeck()
         {
             return deck;
@@ -32,14 +48,8 @@ namespace UNO.Logic
         {
             this.TopCard = TopCard;
         }
-        public int getCurrentPlayerIndex()
-        {
-            return CurrentPlayerIndex;
-        }
-        public void setCurrentPlayerIndex(int CurrentPlayerIndex)
-        {
-            this.CurrentPlayerIndex = CurrentPlayerIndex;
-        }
+     
+      
         public Player getcurrentPlayer()
         {
             return currentPlayer;
@@ -48,23 +58,7 @@ namespace UNO.Logic
         {
             this.currentPlayer = currentPlayer;
         }
-        public Game()
-        {
-
-            deck = new Deck();
-            deck.Generate();
-            deck.Shuffle();
-
-            Players = new List<Player>();
-            for (int i=0;i<2;i++)
-            {
-                Player p = new Player(i.ToString());
-                deck.Deal(p);
-                Players.Add(p);
-            }
-            TopCard = deck.GetTopCard();
-            currentPlayer = Players[0];
-        }
+      
         
 
         public void UpdateColor(Colors ChosenColor)
@@ -121,12 +115,12 @@ namespace UNO.Logic
                 }
                 else
                 {
-                    pb.BackColor = Color.OrangeRed; // O culoare vizibilă dacă nu găsește poza
+                    pb.BackColor = Color.Red; 
                 }
 
                
                 parent.Controls.Add(pb);
-                // -----------------------------
+                
 
                 pb.BringToFront();
 

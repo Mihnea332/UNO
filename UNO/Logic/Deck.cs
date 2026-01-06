@@ -44,11 +44,7 @@ namespace UNO.Logic
             deck.Add(new WildCard(Colors.None, Val.Wild));
             deck.Add(new WildCard(Colors.None, Val.WildDrawFour));
         }
-        public void Print()
-        {
-            foreach (Card c in deck)
-                Console.WriteLine(c.ToString());
-        }
+   
         public void Shuffle()
         {
             Random rnd = new Random();
@@ -69,45 +65,7 @@ namespace UNO.Logic
                 deck.RemoveAt(deck.Count - 1);
             }
         }
-        public void DrawCard(Player p, Card TopCard)
-        {
-            if (deck.Count == 0)
-            {
-                List<Card> deck_temp = new List<Card>();
-                foreach (Card c in deck_played)
-                    if (c != TopCard) deck_temp.Add(c);
-
-                if (deck_temp.Count == 0)
-                {
-                    MessageBox.Show("Nu mai sunt cărți disponibile pentru tras!");
-                    return;
-                }
-
-                deck_played.Clear();
-                deck_played.Add(TopCard);
-                deck = deck_temp;
-
-
-                Random rnd = new Random();
-                for (int i = 0; i < deck.Count; i++)
-                {
-                    int index = rnd.Next(deck.Count);
-                    Card temp = deck[i];
-                    deck[i] = deck[index];
-                    deck[index] = temp;
-                }
-            }
-
-            if (deck.Count == 0)
-            {
-                MessageBox.Show("Pachetul este gol. Nu se poate trage.");
-                return;
-            }
-
-            p.AddCard(deck[deck.Count - 1]);
-            deck.RemoveAt(deck.Count - 1);
-        }
-
+        
         public Card GetTopCard()
         {
             Card temp = deck[deck.Count - 1];

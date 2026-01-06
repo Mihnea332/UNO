@@ -12,16 +12,16 @@ namespace UNO.Logic
 {
     public class Player
     {
-
+        private string name;
         private List<Card> Hand;
         public List<Card> getHand()
         {
             return Hand;
         }
-        public Player(string index)
+        public Player(string name)
         {
             Hand = new List<Card>();
-
+            this.name = name;
             
         }
         public void AddCard(Card card)
@@ -98,11 +98,7 @@ namespace UNO.Logic
                 return true;
             return false;
             }
-        public void PlayCard(Card TopCard,Card card)
-        {
-           
-                RemoveCard(card);
-        }
+    
        
     }
 }

@@ -30,6 +30,7 @@ namespace UNO
         {
             InitializeComponent();
             game = new Game();
+            game.setcurrentPlayer(game.getPlayers()[1]);
             this.Text = "UNO Client - Player 2";
             this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
             this.btnDraw.Click += new System.EventHandler(this.btnDraw_Click);
@@ -125,14 +126,16 @@ namespace UNO
                 game.ShowOpponentHand(panelOpponentHand, opponentCardCount);
                 Card c = StringToCard(parts[1]);
                 game.setTopCard(c);
-                game.ShowTopCard(panelTopCardControl);
+               
                 if (c.value == Val.Wild || c.value == Val.WildDrawFour)
                 {
+                    panelTopCardControl.Controls.Clear();
                     System.Drawing.Color visualColor = System.Drawing.Color.FromName(c.color.ToString());
                     panelTopCardControl.BackColor = visualColor;
                 }
                 else
                 {
+                    game.ShowTopCard(panelTopCardControl);
                     panelTopCardControl.BackColor = System.Drawing.Color.Transparent;
                 }
                 if(c.value==Val.DrawTwo)
@@ -237,8 +240,12 @@ namespace UNO
             game.getcurrentPlayer().RemoveCard(card);
             card.color = finalColor;
             game.setTopCard(card);
-            game.ShowTopCard(panelTopCardControl);
             game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
+            if (card.value == Val.Wild|| card.value==Val.WildDrawFour)
+            {
+                panelTopCardControl.Controls.Clear();
+                panelTopCardControl.BackColor = System.Drawing.Color.FromName(finalColor.ToString());
+            }
             if (game.getcurrentPlayer().getHand().Count == 0)
             {
                 SendMessage("WIN");
