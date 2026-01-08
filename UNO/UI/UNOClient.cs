@@ -31,6 +31,9 @@ namespace UNO
             InitializeComponent();
             game = new Game();
             game.setcurrentPlayer(game.getPlayers()[1]);
+            game.getPlayers().Clear();
+            game.getdeck().deck.Clear();
+            game.getdeck().deck_played.Clear();
             this.Text = "UNO Client - Player 2";
             this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
             this.btnDraw.Click += new System.EventHandler(this.btnDraw_Click);
