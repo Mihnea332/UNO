@@ -12,7 +12,7 @@ using System.Threading;
 using UNO.Model;
 using UNO.Logic;
 using System.IO;
-using System.Xml.Linq;
+
 
 namespace UNO
 {
@@ -38,7 +38,7 @@ namespace UNO
             this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
             this.btnDraw.Click += new System.EventHandler(this.btnDraw_Click);
             game.getcurrentPlayer().getHand().Clear();
-            Control.CheckForIllegalCrossThreadCalls = false;
+   
             this.FormClosed += (s, e) => {
                 isConnected = false;
                 if (t != null) t.Abort();
