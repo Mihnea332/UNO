@@ -53,7 +53,7 @@
             // txtIP
             // 
             this.txtIP.Location = new System.Drawing.Point(344, 73);
-            this.txtIP.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtIP.Margin = new System.Windows.Forms.Padding(2);
             this.txtIP.Name = "txtIP";
             this.txtIP.Size = new System.Drawing.Size(76, 20);
             this.txtIP.TabIndex = 2;
@@ -62,12 +62,13 @@
             // btnConnect
             // 
             this.btnConnect.Location = new System.Drawing.Point(430, 65);
-            this.btnConnect.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnConnect.Margin = new System.Windows.Forms.Padding(2);
             this.btnConnect.Name = "btnConnect";
             this.btnConnect.Size = new System.Drawing.Size(62, 35);
             this.btnConnect.TabIndex = 3;
             this.btnConnect.Text = "Connect";
             this.btnConnect.UseVisualStyleBackColor = true;
+            this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
             // 
             // panelTopCardControl
             // 
@@ -85,6 +86,7 @@
             this.btnDraw.TabIndex = 0;
             this.btnDraw.UseVisualStyleBackColor = true;
             this.btnDraw.Visible = false;
+            this.btnDraw.Click += new System.EventHandler(this.btnDraw_Click);
             // 
             // panel1
             // 
@@ -127,7 +129,7 @@
             this.Controls.Add(this.panelHandControl);
             this.Controls.Add(this.panelOpponentHand);
             this.DoubleBuffered = true;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "UNOClient";
             this.Text = "UNOClient";
             this.Load += new System.EventHandler(this.UNOClient_Load);

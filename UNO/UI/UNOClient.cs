@@ -25,7 +25,7 @@ namespace UNO
         private Game game;
         private Card currentTopCard;
         private int opponentCardCount=5;
-
+        private bool backToMenu = false;
         public UNOClient()
         {
             InitializeComponent();
@@ -35,16 +35,32 @@ namespace UNO
             game.getdeck().deck.Clear();
             game.getdeck().deck_played.Clear();
             this.Text = "UNO Client - Player 2";
-            this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
-            this.btnDraw.Click += new System.EventHandler(this.btnDraw_Click);
             game.getcurrentPlayer().getHand().Clear();
    
             this.FormClosed += (s, e) => {
                 isConnected = false;
-                if (t != null) t.Abort();
                 if (client != null) client.Close();
-                Environment.Exit(0);
+                
+                if (!backToMenu)
+                {
+
+                    Environment.Exit(0);
+                }
             };
+           
+        }
+        private void HandleServerDisconnect()
+        {
+            if (this.Disposing || this.IsDisposed) return;
+            this.Invoke((MethodInvoker)delegate
+            {
+                isConnected = false;
+                MessageBox.Show("Server stopped, returning to Main Menu");
+                backToMenu = true;
+                MainMenu menu = new MainMenu();
+                menu.Show();
+                this.Close();
+            });
         }
         private Card StringToCard(string text)
         {
@@ -92,11 +108,11 @@ namespace UNO
                         this.Invoke((MethodInvoker)delegate {
                             ProcessData(data);
                         });
-                    else break;
+                    else HandleServerDisconnect();
                 }
                 catch
                 {
-                    break;
+                    HandleServerDisconnect();
                 }
             }
         }
@@ -108,13 +124,13 @@ namespace UNO
             if (command == "HAND")
             {
                 string[] cardsArray = parts[1].Split(';');
-                Player me = game.getcurrentPlayer();
+                
                 foreach (string cStr in cardsArray)
                 {
                     Card c = StringToCard(cStr);
-                    if (c != null) me.getHand().Add(c);
+                    if (c != null) game.getcurrentPlayer().getHand().Add(c);
                 }
-                me.ShowHand(panelHandControl, PictureBox_Click);
+                game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
                 
             }
             else if (command == "TOP")
@@ -143,34 +159,34 @@ namespace UNO
                 }
                 if(c.value==Val.DrawTwo)
                 {
-                   // MessageBox.Show("Draw Two!");
-                    Player me = game.getcurrentPlayer();
+                  
+                    
                     for(int i=0;i<2;i++)
                     {
                         SendMessage("DRAW");
                     }
-                    me.ShowHand(panelHandControl, PictureBox_Click);
+                    game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
                     SendMessage("SKIP");
                 }
                 else if(c.value==Val.Skip)
                 {
-                    //MessageBox.Show("Skip played!");
+                    
                     SendMessage("SKIP");
                 }
                 else if(c.value==Val.WildDrawFour)
                 {
-                   // MessageBox.Show("Draw Four!");
-                    Player me = game.getcurrentPlayer();
+                  
+                    
                     for(int i=0;i<4;i++)
                     {
                         SendMessage("DRAW");
                     }
-                    me.ShowHand(panelHandControl, PictureBox_Click);
+                    game.getcurrentPlayer().ShowHand(panelHandControl, PictureBox_Click);
                     SendMessage("SKIP");
                 }
                 else
                 {
-                   // MessageBox.Show("Your turn");
+             
                     panelHandControl.Enabled = true;
                     btnDraw.Enabled = true;
                     lblTurn.Text = "Your turn";
@@ -180,7 +196,7 @@ namespace UNO
             {
                 opponentCardCount++;
                 game.ShowOpponentHand(panelOpponentHand, opponentCardCount);
-                // MessageBox.Show("Opponent Drew.Your Turn");
+                
                 panelHandControl.Enabled = true;
                 btnDraw.Enabled = true;
                 lblTurn.Text = "Your turn";
@@ -205,7 +221,7 @@ namespace UNO
             }
             else if(command=="SKIP")
             {
-               // MessageBox.Show("Opponent Skipped.");
+               
                 panelHandControl.Enabled = true;
                 btnDraw.Enabled = true;
                 lblTurn.Text = "Your turn";

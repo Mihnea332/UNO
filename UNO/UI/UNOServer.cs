@@ -150,7 +150,7 @@ namespace UNO
 
                     if (c.value == Val.DrawTwo)
                     {
-                       // MessageBox.Show("Ai primit +2! Tragi 2 cărți și stai o tură.");
+            
                         Player me = game.getcurrentPlayer();
                         for (int i = 0; i < 2; i++)
                         {
@@ -162,12 +162,12 @@ namespace UNO
                     }
                     else if (c.value == Val.Skip)
                     {
-                       // MessageBox.Show("Ai primit Skip! Stai o tură.");
+                       
                         SendMessage("SKIP");
                     }
                     else if (c.value == Val.WildDrawFour)
                     {
-                       // MessageBox.Show("Ai primit +4! Tragi 4 cărți și stai o tură.");
+                      
                         Player me = game.getcurrentPlayer();
                         for (int i = 0; i < 4; i++)
                         {
@@ -179,7 +179,7 @@ namespace UNO
                     }
                     else
                     {
-                       // MessageBox.Show("E rândul tău!");
+                      
                         panelHandControl.Enabled = true;
                         btnDraw.Enabled = true;
                         lblTurn.Text = "Your turn";
@@ -194,7 +194,6 @@ namespace UNO
                     string handString = "";
                     handString = handString + cardText + ";";
                     SendMessage("DRAW_CARD:" + handString);
-                    // MessageBox.Show("Adversarul a tras o carte. E rândul tău!");
                     panelHandControl.Enabled = true;
                     btnDraw.Enabled = true;
                     lblTurn.Text = "Your turn";
@@ -206,7 +205,7 @@ namespace UNO
                 }
                 else if (command == "SKIP")
                 {
-                   // MessageBox.Show("Adversarul a stat o tură (din cauza +2/+4/Skip). Joci din nou!");
+
                     
                     panelHandControl.Enabled = true;
                     btnDraw.Enabled = true;
